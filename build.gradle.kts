@@ -43,3 +43,9 @@ publishing {
         }
     }
 }
+
+tasks {
+    java {
+        withSourcesJar()
+    }
+}
