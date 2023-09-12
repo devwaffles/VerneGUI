@@ -13,8 +13,8 @@ internal object InternalVerneGUI : VerneGUI {
     override fun register(vararg guis: GUIClass) =
         guis.forEach(InternalGUIHandler::register)
 
-    override fun registerDependency(dependency: AnyClass) =
-        InternalGUIHandler.registerDependency(dependency)
+    override fun registerDependency(vararg dependencies: AnyClass) =
+        dependencies.forEach(InternalGUIHandler::registerDependency)
 
     override fun <D : KClass<T>, T : Any> registerDependency(
         dependency: D,
