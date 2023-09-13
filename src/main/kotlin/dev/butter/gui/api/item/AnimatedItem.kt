@@ -8,7 +8,6 @@ data class AnimatedItem(
     override val slot: Int,
     override val tickSpeed: Long,
     override val cycleItems: List<ItemStack>,
-    override val currentIndex: Int = 0,
 ) : GUIItem(slot, cycleItems.first()), Animated {
     constructor(
         row: Int,
