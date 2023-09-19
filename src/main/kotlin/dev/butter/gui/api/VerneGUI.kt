@@ -125,7 +125,7 @@ interface VerneGUI {
      * instance of the GUI kotlin class that is passed in.
      *
      * @param gui The GUI kotlin class to retrieve the static instance for.
-     * @return The static instance of the GUI kotlin class.
+     * @return The GUI kotlin class.
      */
     fun <G : VerneBaseGUI> getStatic(gui: KClass<G>): G
 
@@ -154,11 +154,11 @@ interface VerneGUI {
 
     companion object {
         /**
-         * The getInstance method is used to retrieve the VerneGUI
+         * The get method is used to retrieve the VerneGUI
          * instance that is implemented by the InternalVerneGUI class.
          *
          * @return The VerneGUI instance.
          */
-        fun getInstance(): VerneGUI = InternalVerneGUI
+        fun get(): VerneGUI = InternalVerneGUI
     }
 }

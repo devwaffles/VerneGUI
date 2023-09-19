@@ -85,14 +85,24 @@ internal object InternalGUIHandler {
     internal fun <D : KClass<T>, T : Any> registerDependency(
         dependency: D,
         init: DependencyInit<T>,
-    ) = if (dependency in dependencyMap.keys) throw AlreadyRegisteredException(dependency)
-        else dependencyMap += dependency to init
+    ) {
+        if (dependency in dependencyMap.keys) {
+            throw AlreadyRegisteredException(dependency)
+        }
+
+        dependencyMap += dependency to init
+    }
 
     internal fun <D : KClass<T>, T : Any> registerDependency(
         dependency: D,
         init: PlayerDependencyInit<T>,
-    ) = if (dependency in playerDependencyMap.keys) throw AlreadyRegisteredException(dependency)
-        else playerDependencyMap += dependency to init
+    ) {
+        if (dependency in playerDependencyMap.keys) {
+            throw AlreadyRegisteredException(dependency)
+        }
+
+        playerDependencyMap += dependency to init
+    }
 
     internal fun registerSingleton(dependency: AnyClass) = when {
         !dependency.hasNoArgsConstructor ->
@@ -115,18 +125,28 @@ internal object InternalGUIHandler {
     @Suppress("UNCHECKED_CAST")
     internal fun <G : VerneBaseGUI> getMapping(
         gui: KClass<G>
-    ) = if (gui in staticGuiSet) throw StaticGUIRequestException(gui)
-        else playerGuiInstances.mapValues { guiList ->
+    ): Map<UUID, G> {
+        if (gui in staticGuiSet) {
+            throw StaticGUIRequestException(gui)
+        }
+
+        return playerGuiInstances.mapValues { guiList ->
             guiList.find(gui::isInstance) as? G
                 ?: throw UnregisteredGUIException(gui)
         }
+    }
 
     @Suppress("UNCHECKED_CAST")
     internal fun <G : VerneBaseGUI> getStatic(
         gui: KClass<G>
-    ) = if (gui in dynamicGuiSet) throw DynamicGUIRequestException(gui)
-        else nonPlayerGuiInstances.find(gui::isInstance) as? G
+    ): G {
+        if (gui in dynamicGuiSet) {
+            throw DynamicGUIRequestException(gui)
+        }
+
+        return nonPlayerGuiInstances.find(gui::isInstance) as? G
             ?: throw UnregisteredGUIException(gui)
+    }
 
     internal fun getGuis(player: Player) = playerGuiInstances[player.uniqueId]!!.toSet()
 
@@ -135,7 +155,7 @@ internal object InternalGUIHandler {
         gui: KClass<G>,
         player: Player,
     ) = this.getGuis(player).find(gui::isInstance) as? G
-            ?: throw UnregisteredGUIException(gui)
+        ?: throw UnregisteredGUIException(gui)
 
     private fun sortGuiSet() = guiSet
         .associateWithNotNull<GUIClass, TypeAlias>(GUIClass::findAnnotation)

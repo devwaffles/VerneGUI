@@ -1,6 +1,5 @@
 package dev.butter.gui.internal.update
 
-import dev.butter.gui.internal.InternalGUIHandler
 import dev.butter.gui.internal.InternalGUIHandler.nonPlayerGuiInstances
 import org.bukkit.scheduler.BukkitRunnable
 

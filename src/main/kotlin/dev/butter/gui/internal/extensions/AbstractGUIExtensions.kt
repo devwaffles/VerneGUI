@@ -50,7 +50,7 @@ internal fun VerneBaseGUI.injectNonPlayerDependencies() {
         }
 }
 
-internal fun VerneBaseGUI.injectPlayerDependencies(player: Player) = this::class
+internal inline fun <reified G : VerneBaseGUI> G.injectPlayerDependencies(player: Player) = G::class
     .annotatedDependencyFields()
     .filterValues(playerDependencyMap.keys::contains)
     .mapValues { dep -> playerDependencyMap[dep]!! }
