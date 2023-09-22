@@ -1,7 +1,11 @@
 package dev.butter.gui.api
 
 import dev.butter.gui.api.base.VerneBaseGUI
-import dev.butter.gui.internal.*
+import dev.butter.gui.internal.InternalVerneGUI
+import dev.butter.gui.internal.types.AnyClass
+import dev.butter.gui.internal.types.DependencyInit
+import dev.butter.gui.internal.types.GUIClass
+import dev.butter.gui.internal.types.PlayerDependencyInit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -92,7 +96,7 @@ interface VerneGUI {
      * @param init The init function that will be used to construct the dependency instances.
      * @return Unit
      */
-    fun <D : KClass<T>, T : Any> registerDependency(
+    fun <D : KClass<T>, T : Any> registerPlayerDependency(
         dependency: D,
         init: PlayerDependencyInit<T>,
     )
@@ -101,7 +105,7 @@ interface VerneGUI {
         vararg dependencyPair: Pair<D, DependencyInit<T>>,
     )
 
-    fun <D : KClass<T>, T : Any> registerDependency(
+    fun <D : KClass<T>, T : Any> registerPlayerDependency(
         vararg dependencyPair: Pair<D, PlayerDependencyInit<T>>,
     )
 

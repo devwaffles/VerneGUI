@@ -1,8 +1,8 @@
 package dev.butter.gui.internal.exception.dependency
 
-import dev.butter.gui.internal.AnyClass
-import dev.butter.gui.internal.GUIClass
 import dev.butter.gui.internal.exception.base.DependencyException
+import dev.butter.gui.internal.types.AnyClass
+import dev.butter.gui.internal.types.GUIClass
 
 internal class PlayerDependencyInStaticGUIException(
     override val dependency: AnyClass,

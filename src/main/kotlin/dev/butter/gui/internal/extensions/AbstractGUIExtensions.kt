@@ -6,6 +6,7 @@ import dev.butter.gui.api.annotation.TypeAlias
 import dev.butter.gui.api.base.GUIContents
 import dev.butter.gui.api.base.VerneBaseGUI
 import dev.butter.gui.api.item.Animated
+import dev.butter.gui.api.item.GUIItem
 import dev.butter.gui.api.type.GUIType.STATIC
 import dev.butter.gui.internal.InternalGUIHandler.dependencyMap
 import dev.butter.gui.internal.InternalGUIHandler.playerDependencyMap
@@ -38,10 +39,10 @@ internal inline fun <reified G : VerneBaseGUI> G.init(
     this.owner = owner
 }
 
-internal fun VerneBaseGUI.injectNonPlayerDependencies() {
+internal inline fun <reified G : VerneBaseGUI> G.injectNonPlayerDependencies() {
     val dependencyGraph = dependencyMap + singletonMap
 
-    this::class
+    G::class
         .annotatedDependencyFields()
         .filterValues(dependencyGraph.keys::contains)
         .mapValues { dep -> dependencyGraph[dep]!! }
@@ -60,9 +61,13 @@ internal inline fun <reified G : VerneBaseGUI> G.injectPlayerDependencies(player
         field.set(this, init.invoke(player, plugin))
     }
 
-internal fun VerneBaseGUI.update() {
-    val animatedItems = this.contents.items.filterIsInstance<Animated>()
+@Suppress("UNCHECKED_CAST")
+internal fun <G : VerneBaseGUI> G.update() {
+    val items = this.contents.items
+    val animatedItems = items.filterIsInstance<Animated>() as List<GUIItem>
 
     this.contents.clear()
-    this.contents.items.removeIf {  }
+    this.createContents()
+    items.removeIfInstance<Animated>()
+    items.addAll(animatedItems)
 }

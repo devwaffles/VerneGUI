@@ -1,7 +1,7 @@
 package dev.butter.gui.internal.exception.gui
 
-import dev.butter.gui.internal.GUIClass
 import dev.butter.gui.internal.exception.base.GUIException
+import dev.butter.gui.internal.types.GUIClass
 
 internal class UnregisteredGUIException(
     override val gui: GUIClass

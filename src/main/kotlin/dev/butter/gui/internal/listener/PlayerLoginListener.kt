@@ -1,6 +1,6 @@
 package dev.butter.gui.internal.listener
 
-import dev.butter.gui.internal.InternalGUIHandler.registerPlayer
+import dev.butter.gui.internal.extensions.registerPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent

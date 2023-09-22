@@ -5,6 +5,7 @@ import dev.butter.gui.api.base.VerneBaseGUI
 import dev.butter.gui.api.item.Animated
 import dev.butter.gui.api.item.GUIItem
 import dev.butter.gui.internal.InternalGUIHandler.nonPlayerGuiInstances
+import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
 import dev.butter.gui.internal.extensions.associateWithNotNull
 import dev.butter.gui.internal.extensions.forEachKeyAction
 import dev.butter.gui.internal.extensions.mapValues
@@ -41,10 +42,22 @@ internal object GUIUpdater : BukkitRunnable() {
     }
 
     private fun updateDynamicGuis() {
+        playerGuiInstances.values
+            .flatten()
+            .map(VerneBaseGUI::contents)
+            .flatMap(GUIContents::items)
+            .associateWithNotNull { it as? Animated }
+            .filterValues(Animated::onTick)
+            .mapValues(Animated::cycleItems)
+            .forEachKeyAction(GUIItem::cycleItem)
+
+        playerGuiInstances.values
+            .flatten()
+            .forEach(VerneBaseGUI::update)
     }
 }
 
-private fun Animated.onTick() = currentTick % tickSpeed == 0L
+private fun Animated.onTick() = currentTick % tickSpeed < DEFAULT_DELAYS.first
 
 private fun GUIItem.cycleItem(items: List<ItemStack>) {
     val currentItem = this.item

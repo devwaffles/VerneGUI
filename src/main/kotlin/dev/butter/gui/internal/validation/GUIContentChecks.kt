@@ -13,11 +13,11 @@ import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_DELAYS
 import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_ROWS
 
 internal val GUIContents.slotRange
-    get() = 0..<this.inventory.size
+    get() = 0..<this.gui.inventory.size
 
 internal fun GUIContents.checkSlots(slot: Int): Boolean {
     if (slot !in this.slotRange) {
-        throw InvalidSlotException(this.guiClass, slot)
+        throw InvalidSlotException(this.gui::class, slot)
     }
 
     return true
@@ -55,7 +55,7 @@ internal fun GUIContents.checkColumnRange(inputRange: IntRange): Boolean {
 
 internal fun GUIContents.checkRows(row: Int): Boolean {
     if (row !in DEFAULT_ROWS) {
-        throw InvalidRowException(this.guiClass, row)
+        throw InvalidRowException(this.gui::class, row)
     }
 
     return true
@@ -63,7 +63,7 @@ internal fun GUIContents.checkRows(row: Int): Boolean {
 
 internal fun GUIContents.checkColumns(column: Int): Boolean {
     if (column !in DEFAULT_COLUMNS) {
-        throw InvalidColumnException(this.guiClass, column)
+        throw InvalidColumnException(this.gui::class, column)
     }
 
     return true
@@ -71,7 +71,7 @@ internal fun GUIContents.checkColumns(column: Int): Boolean {
 
 internal fun GUIContents.checkDelays(delay: Long): Boolean {
     if (delay !in DEFAULT_DELAYS) {
-        throw InvalidDelaysException(this.guiClass, delay)
+        throw InvalidDelaysException(this.gui::class, delay)
     }
 
     return true

@@ -6,9 +6,6 @@ import dev.butter.gui.api.annotation.TypeAlias
 import dev.butter.gui.api.base.VerneBaseGUI
 import dev.butter.gui.api.type.GUIType.DYNAMIC
 import dev.butter.gui.api.type.GUIType.STATIC
-import dev.butter.gui.internal.InternalGUIHandler.dynamicGuiSet
-import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
-import dev.butter.gui.internal.InternalGUIHandler.plugin
 import dev.butter.gui.internal.exception.dependency.AlreadyRegisteredException
 import dev.butter.gui.internal.exception.dependency.MissingNoArgsConstructorException
 import dev.butter.gui.internal.exception.dependency.SingletonRegisteredException
@@ -16,7 +13,12 @@ import dev.butter.gui.internal.exception.gui.*
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.listener.VerneGUIListener
+import dev.butter.gui.internal.types.AnyClass
+import dev.butter.gui.internal.types.DependencyInit
+import dev.butter.gui.internal.types.GUIClass
+import dev.butter.gui.internal.types.PlayerDependencyInit
 import dev.butter.gui.internal.update.GUIUpdater
+import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_DELAYS
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -24,11 +26,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
-
-internal typealias GUIClass = KClass<out VerneBaseGUI>
-internal typealias AnyClass = KClass<out Any>
-internal typealias DependencyInit<T> = (JavaPlugin) -> T
-internal typealias PlayerDependencyInit<T> = (Player, JavaPlugin) -> T
 
 internal object InternalGUIHandler {
     private val guiSet: MutableSet<GUIClass> = mutableSetOf()
@@ -52,7 +49,7 @@ internal object InternalGUIHandler {
         initStaticGuis()
         initDynamicGuis()
 
-        plugin.server.scheduler.runTaskTimer(plugin, GUIUpdater as Runnable, 0L, 1L)
+        plugin.server.scheduler.runTaskTimer(plugin, GUIUpdater as Runnable, 0L, DEFAULT_DELAYS.first)
         plugin.server.pluginManager.registerEvents(PlayerLoginListener, plugin)
         plugin.server.pluginManager.registerEvents(VerneGUIListener, plugin)
     }
@@ -98,7 +95,7 @@ internal object InternalGUIHandler {
         dependencyMap += dependency to init
     }
 
-    internal fun <D : KClass<T>, T : Any> registerDependency(
+    internal fun <D : KClass<T>, T : Any> registerPlayerDependency(
         dependency: D,
         init: PlayerDependencyInit<T>,
     ) {
@@ -183,14 +180,4 @@ internal object InternalGUIHandler {
 
     private fun initDynamicGuis() = plugin.server.onlinePlayers
         .forEach(Player::registerPlayer)
-}
-
-internal fun Player.registerPlayer() {
-    playerGuiInstances += this.uniqueId to dynamicGuiSet
-        .asSequence()
-        .map(GUIClass::createInstance)
-        .onEach(VerneBaseGUI::injectNonPlayerDependencies)
-        .onEach { gui -> gui.injectPlayerDependencies(this) }
-        .onEach { gui -> gui.init(this, plugin) }
-        .toSet()
 }

@@ -1,7 +1,7 @@
 package dev.butter.gui.internal.exception.input
 
-import dev.butter.gui.internal.GUIClass
 import dev.butter.gui.internal.exception.base.GUIException
+import dev.butter.gui.internal.types.GUIClass
 import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_COLUMNS
 
 internal class InvalidColumnException(

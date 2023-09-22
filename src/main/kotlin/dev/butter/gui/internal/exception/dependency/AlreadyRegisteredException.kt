@@ -1,7 +1,7 @@
 package dev.butter.gui.internal.exception.dependency
 
-import dev.butter.gui.internal.AnyClass
 import dev.butter.gui.internal.exception.base.DependencyException
+import dev.butter.gui.internal.types.AnyClass
 
 internal class AlreadyRegisteredException(
     override val dependency: AnyClass
