@@ -1,16 +1,13 @@
-package dev.butter.gui.internal.update
+package dev.butter.gui.internal.updater
 
+import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.base.GUIContents
-import dev.butter.gui.api.base.VerneBaseGUI
 import dev.butter.gui.api.item.Animated
 import dev.butter.gui.api.item.GUIItem
 import dev.butter.gui.internal.InternalGUIHandler.nonPlayerGuiInstances
 import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
-import dev.butter.gui.internal.extensions.associateWithNotNull
-import dev.butter.gui.internal.extensions.forEachKeyAction
-import dev.butter.gui.internal.extensions.mapValues
-import dev.butter.gui.internal.extensions.update
-import dev.butter.gui.internal.update.GUIUpdater.currentTick
+import dev.butter.gui.internal.extensions.*
+import dev.butter.gui.internal.updater.GUIUpdater.currentTick
 import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_DELAYS
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
@@ -21,30 +18,32 @@ internal object GUIUpdater : BukkitRunnable() {
     override fun run() {
         updateStaticGuis()
         updateDynamicGuis()
-    }
 
-    private fun updateStaticGuis() {
         currentTick++
-
-        nonPlayerGuiInstances
-            .map(VerneBaseGUI::contents)
-            .flatMap(GUIContents::items)
-            .associateWithNotNull { it as? Animated }
-            .filterValues(Animated::onTick)
-            .mapValues(Animated::cycleItems)
-            .forEachKeyAction(GUIItem::cycleItem)
-
-        nonPlayerGuiInstances.forEach(VerneBaseGUI::update)
 
         if (currentTick == DEFAULT_DELAYS.last) {
             currentTick = 0L
         }
     }
 
+    private fun updateStaticGuis() {
+        nonPlayerGuiInstances
+            .map(BaseGUI::contents)
+            .filter(GUIContents::hasAnimatedItems)
+            .flatMap(GUIContents::items)
+            .associateWithNotNull { it as? Animated }
+            .filterValues(Animated::onTick)
+            .mapValues(Animated::cycleItems)
+            .forEachKeyAction(GUIItem::cycleItem)
+
+        nonPlayerGuiInstances.forEach(BaseGUI::update)
+    }
+
     private fun updateDynamicGuis() {
         playerGuiInstances.values
             .flatten()
-            .map(VerneBaseGUI::contents)
+            .map(BaseGUI::contents)
+            .filter(GUIContents::hasAnimatedItems)
             .flatMap(GUIContents::items)
             .associateWithNotNull { it as? Animated }
             .filterValues(Animated::onTick)
@@ -53,14 +52,14 @@ internal object GUIUpdater : BukkitRunnable() {
 
         playerGuiInstances.values
             .flatten()
-            .forEach(VerneBaseGUI::update)
+            .forEach(BaseGUI::update)
     }
 }
 
-private fun Animated.onTick() = currentTick % tickSpeed < DEFAULT_DELAYS.first
+private fun Animated.onTick() = currentTick % tickSpeed == 0L
 
 private fun GUIItem.cycleItem(items: List<ItemStack>) {
     val currentItem = this.item
     val index = items.indexOf(currentItem)
-    this.item = items[index + 1 % items.size]
+    this.item = items[(index + 1) % (items.size)]
 }

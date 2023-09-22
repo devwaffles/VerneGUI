@@ -1,6 +1,6 @@
 package dev.butter.gui.api
 
-import dev.butter.gui.api.base.VerneBaseGUI
+import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.internal.InternalVerneGUI
 import dev.butter.gui.internal.types.AnyClass
 import dev.butter.gui.internal.types.DependencyInit
@@ -42,7 +42,7 @@ interface VerneGUI {
      * GUITitle, GUISize, and TypeAlias annotations, and
      * have all dependencies registered.
      *
-     * @see dev.butter.gui.api.base.VerneBaseGUI
+     * @see dev.butter.gui.api.base.BaseGUI
      * @see dev.butter.gui.api.annotation.GUITitle
      * @see dev.butter.gui.api.annotation.GUISize
      * @see dev.butter.gui.api.annotation.TypeAlias
@@ -130,7 +130,7 @@ interface VerneGUI {
      * @param gui The GUI kotlin class to retrieve the mapping for.
      * @return A mapping of all current online players to their respective GUI instances.
      */
-    fun <G : VerneBaseGUI> getMapping(gui: KClass<G>): Map<UUID, G>
+    fun <G : BaseGUI> getMapping(gui: KClass<G>): Map<UUID, G>
 
     /**
      * The getStatic method is used to retrieve the static
@@ -139,7 +139,7 @@ interface VerneGUI {
      * @param gui The GUI kotlin class to retrieve the static instance for.
      * @return The GUI kotlin class.
      */
-    fun <G : VerneBaseGUI> getStatic(gui: KClass<G>): G
+    fun <G : BaseGUI> getStatic(gui: KClass<G>): G
 
     /**
      * The getGuis method is used to retrieve a set of all
@@ -149,7 +149,7 @@ interface VerneGUI {
      * @param player The player to retrieve the dynamic GUI instances for.
      * @return A set of all registered dynamic GUI instances that belongs to the player.
      */
-    fun getGuis(player: Player): Set<VerneBaseGUI>
+    fun getGuis(player: Player): Set<BaseGUI>
 
     /**
      * The get method is used to retrieve the dynamic GUI instance
@@ -159,7 +159,7 @@ interface VerneGUI {
      * @param player The player to retrieve the dynamic GUI instance for.
      * @return The dynamic GUI instance that belongs to the player.
      */
-    operator fun <G : VerneBaseGUI> get(
+    operator fun <G : BaseGUI> get(
         gui: KClass<G>,
         player: Player,
     ): G

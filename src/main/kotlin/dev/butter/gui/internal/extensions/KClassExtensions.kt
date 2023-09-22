@@ -1,7 +1,7 @@
 package dev.butter.gui.internal.extensions
 
 import dev.butter.gui.api.annotation.Dependency
-import dev.butter.gui.api.base.VerneBaseGUI
+import dev.butter.gui.api.base.BaseGUI
 import java.lang.reflect.Field
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -13,7 +13,7 @@ internal val <T : Any> KClass<T>.hasNoArgsConstructor
 internal fun <T : Any> KClass<T>.noArgsConstructor(): KFunction<T>? =
     this.constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
 
-internal fun <T : VerneBaseGUI> KClass<T>.annotatedDependencyFields(): Map<Field, KClass<out Any>> =
+internal fun <T : BaseGUI> KClass<T>.annotatedDependencyFields(): Map<Field, KClass<out Any>> =
     this.java.fields
         .filterNotNull()
         .filter { it.isAnnotationPresent(Dependency::class.java) }

@@ -21,7 +21,7 @@ fun GUIContents.set(
     checkRows(row)
     checkColumns(column)
 
-    this.items.add(RegularItem(row, column, item))
+    this.items += RegularItem(row, column, item)
 }
 
 fun GUIContents.set(
@@ -33,7 +33,7 @@ fun GUIContents.set(
     checkColumns(column)
 
     rows.forEach { row ->
-        this.items.add(RegularItem(row, column, item))
+        this.items += RegularItem(row, column, item)
     }
 }
 
@@ -46,7 +46,7 @@ fun GUIContents.set(
     checkColumnRange(columns)
 
     columns.forEach { column ->
-        this.items.add(RegularItem(row, column, item))
+        this.items += RegularItem(row, column, item)
     }
 }
 
@@ -56,7 +56,7 @@ fun GUIContents.set(
 ) {
     checkSlots(slot)
 
-    this.items.add(RegularItem(slot, item))
+    this.items += RegularItem(slot, item)
 }
 
 fun GUIContents.set(
@@ -66,7 +66,7 @@ fun GUIContents.set(
     checkSlotRange(slots)
 
     slots.forEach { slot ->
-        this.items.add(RegularItem(slot, item))
+        this.items += RegularItem(slot, item)
     }
 }
 
@@ -79,7 +79,7 @@ fun GUIContents.setClickable(
     checkRows(row)
     checkColumns(column)
 
-    this.items.add(ClickableItem(row, column, item, action))
+    this.items += ClickableItem(row, column, item, action)
 }
 
 fun GUIContents.setClickable(
@@ -89,7 +89,7 @@ fun GUIContents.setClickable(
 ) {
     checkSlots(slot)
 
-    this.items.add(ClickableItem(slot, item, action))
+    this.items += ClickableItem(slot, item, action)
 }
 
 fun GUIContents.setAnimated(
@@ -102,7 +102,7 @@ fun GUIContents.setAnimated(
     checkColumns(column)
     checkDelays(tickSpeed)
 
-    this.items.add(AnimatedItem(row, column, tickSpeed, *cycleItems))
+    this.items += AnimatedItem(row, column, tickSpeed, *cycleItems)
 }
 
 fun GUIContents.setAnimated(
@@ -116,7 +116,7 @@ fun GUIContents.setAnimated(
     checkDelays(tickSpeed)
 
     rows.forEach { row ->
-        this.items.add(AnimatedItem(row, column, tickSpeed, *cycleItems))
+        this.items += AnimatedItem(row, column, tickSpeed, *cycleItems)
     }
 }
 
@@ -131,7 +131,7 @@ fun GUIContents.setAnimated(
     checkDelays(tickSpeed)
 
     columns.forEach { column ->
-        this.items.add(AnimatedItem(row, column, tickSpeed, *cycleItems))
+        this.items += AnimatedItem(row, column, tickSpeed, *cycleItems)
     }
 }
 
@@ -143,7 +143,7 @@ fun GUIContents.setAnimated(
     checkSlots(slot)
     checkDelays(tickSpeed)
 
-    this.items.add(AnimatedItem(slot, tickSpeed, *cycleItems))
+    this.items += AnimatedItem(slot, tickSpeed, *cycleItems)
 }
 
 fun GUIContents.setAnimatedClickable(
@@ -157,7 +157,7 @@ fun GUIContents.setAnimatedClickable(
     checkColumns(column)
     checkDelays(tickSpeed)
 
-    this.items.add(AnimatedClickableItem(row, column, tickSpeed, cycleItems, action))
+    this.items += AnimatedClickableItem(row, column, tickSpeed, cycleItems, action)
 }
 
 fun GUIContents.setAnimatedClickable(
@@ -169,5 +169,5 @@ fun GUIContents.setAnimatedClickable(
     checkSlots(slot)
     checkDelays(tickSpeed)
 
-    this.items.add(AnimatedClickableItem(slot, tickSpeed, cycleItems, action))
+    this.items += AnimatedClickableItem(slot, tickSpeed, cycleItems, action)
 }

@@ -3,7 +3,7 @@ package dev.butter.gui.internal
 import dev.butter.gui.api.annotation.GUISize
 import dev.butter.gui.api.annotation.GUITitle
 import dev.butter.gui.api.annotation.TypeAlias
-import dev.butter.gui.api.base.VerneBaseGUI
+import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.type.GUIType.DYNAMIC
 import dev.butter.gui.api.type.GUIType.STATIC
 import dev.butter.gui.internal.exception.dependency.AlreadyRegisteredException
@@ -17,8 +17,7 @@ import dev.butter.gui.internal.types.AnyClass
 import dev.butter.gui.internal.types.DependencyInit
 import dev.butter.gui.internal.types.GUIClass
 import dev.butter.gui.internal.types.PlayerDependencyInit
-import dev.butter.gui.internal.update.GUIUpdater
-import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_DELAYS
+import dev.butter.gui.internal.updater.GUIUpdater
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -30,9 +29,9 @@ import kotlin.reflect.full.hasAnnotation
 internal object InternalGUIHandler {
     private val guiSet: MutableSet<GUIClass> = mutableSetOf()
     internal val dynamicGuiSet: MutableSet<GUIClass> = mutableSetOf()
-    private val staticGuiSet: MutableSet<GUIClass> = mutableSetOf()
-    internal val nonPlayerGuiInstances: MutableSet<VerneBaseGUI> = mutableSetOf()
-    internal val playerGuiInstances: MutableMap<UUID, Set<VerneBaseGUI>> = mutableMapOf()
+    internal val staticGuiSet: MutableSet<GUIClass> = mutableSetOf()
+    internal val nonPlayerGuiInstances: MutableSet<BaseGUI> = mutableSetOf()
+    internal val playerGuiInstances: MutableMap<UUID, Set<BaseGUI>> = mutableMapOf()
     internal val dependencyMap: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
     internal val playerDependencyMap: MutableMap<AnyClass, PlayerDependencyInit<*>> = mutableMapOf()
     internal val singletonMap: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
@@ -49,7 +48,7 @@ internal object InternalGUIHandler {
         initStaticGuis()
         initDynamicGuis()
 
-        plugin.server.scheduler.runTaskTimer(plugin, GUIUpdater as Runnable, 0L, DEFAULT_DELAYS.first)
+        plugin.server.scheduler.runTaskTimer(plugin, GUIUpdater as Runnable, 0L, 1L)
         plugin.server.pluginManager.registerEvents(PlayerLoginListener, plugin)
         plugin.server.pluginManager.registerEvents(VerneGUIListener, plugin)
     }
@@ -125,7 +124,7 @@ internal object InternalGUIHandler {
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <G : VerneBaseGUI> getMapping(
+    internal fun <G : BaseGUI> getMapping(
         gui: KClass<G>
     ): Map<UUID, G> {
         if (gui in staticGuiSet) {
@@ -139,7 +138,7 @@ internal object InternalGUIHandler {
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <G : VerneBaseGUI> getStatic(
+    internal fun <G : BaseGUI> getStatic(
         gui: KClass<G>
     ): G {
         if (gui in dynamicGuiSet) {
@@ -154,7 +153,7 @@ internal object InternalGUIHandler {
         playerGuiInstances[player.uniqueId]!!.toSet()
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <G : VerneBaseGUI> get(
+    internal fun <G : BaseGUI> get(
         gui: KClass<G>,
         player: Player,
     ) = this.getGuis(player).find(gui::isInstance) as? G
@@ -173,7 +172,7 @@ internal object InternalGUIHandler {
 
     private fun initStaticGuis() = staticGuiSet
         .map(GUIClass::createInstance)
-        .onEach(VerneBaseGUI::injectNonPlayerDependencies)
+        .onEach(BaseGUI::injectNonPlayerDependencies)
         .onEach { gui -> gui.init(null, plugin) }
         .forEach(nonPlayerGuiInstances::add)
 

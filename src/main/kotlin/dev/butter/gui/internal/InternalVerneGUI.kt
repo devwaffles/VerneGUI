@@ -1,7 +1,7 @@
 package dev.butter.gui.internal
 
 import dev.butter.gui.api.VerneGUI
-import dev.butter.gui.api.base.VerneBaseGUI
+import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.internal.types.AnyClass
 import dev.butter.gui.internal.types.DependencyInit
 import dev.butter.gui.internal.types.GUIClass
@@ -45,16 +45,16 @@ internal object InternalVerneGUI : VerneGUI {
     override fun registerSingleton(dependency: AnyClass) =
         InternalGUIHandler.registerSingleton(dependency)
 
-    override fun <G : VerneBaseGUI> getMapping(gui: KClass<G>) =
+    override fun <G : BaseGUI> getMapping(gui: KClass<G>) =
         InternalGUIHandler.getMapping(gui)
 
-    override fun <G : VerneBaseGUI> getStatic(gui: KClass<G>) =
+    override fun <G : BaseGUI> getStatic(gui: KClass<G>) =
         InternalGUIHandler.getStatic(gui)
 
     override fun getGuis(player: Player) =
         InternalGUIHandler.getGuis(player)
 
-    override operator fun <G : VerneBaseGUI> get(
+    override operator fun <G : BaseGUI> get(
         gui: KClass<G>,
         player: Player,
     ) = InternalGUIHandler.get(gui, player)
