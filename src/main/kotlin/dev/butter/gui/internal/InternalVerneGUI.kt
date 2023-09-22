@@ -26,6 +26,18 @@ internal object InternalVerneGUI : VerneGUI {
         init: PlayerDependencyInit<T>,
     ) = InternalGUIHandler.registerDependency(dependency, init)
 
+    override fun <D : KClass<T>, T : Any> registerDependency(
+        vararg dependencyPair: Pair<D, DependencyInit<T>>
+    ) = dependencyPair.forEach { (dependency, pair) ->
+        registerDependency(dependency, pair)
+    }
+
+    override fun <D : KClass<T>, T : Any> registerDependency(
+        vararg dependencyPair: Pair<D, PlayerDependencyInit<T>>
+    ) = dependencyPair.forEach { (dependency, pair) ->
+        registerDependency(dependency, pair)
+    }
+
     override fun registerSingleton(dependency: AnyClass) =
         InternalGUIHandler.registerSingleton(dependency)
 

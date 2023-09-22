@@ -8,7 +8,9 @@ import dev.butter.gui.internal.exception.input.InvalidColumnException
 import dev.butter.gui.internal.exception.input.InvalidDelaysException
 import dev.butter.gui.internal.exception.input.InvalidRowException
 import dev.butter.gui.internal.exception.input.InvalidSlotException
+import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_COLUMNS
 import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_DELAYS
+import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_ROWS
 
 internal val GUIContents.slotRange
     get() = 0..<this.inventory.size
@@ -22,7 +24,9 @@ internal fun GUIContents.checkSlots(slot: Int): Boolean {
 }
 
 internal fun GUIContents.checkSlotRange(slots: IntRange): Boolean {
-    if (slots.first < this.slotRange.first || slots.last > this.slotRange.last) {
+    if (slots.first < this.slotRange.first ||
+        slots.last > this.slotRange.last
+    ) {
         throw ContentSlotRangeException(this, slots)
     }
 
@@ -30,7 +34,9 @@ internal fun GUIContents.checkSlotRange(slots: IntRange): Boolean {
 }
 
 internal fun GUIContents.checkRowRange(inputRange: IntRange): Boolean {
-    if (inputRange.first < 1 || inputRange.last > 6) {
+    if (inputRange.first < DEFAULT_ROWS.first ||
+        inputRange.last > DEFAULT_ROWS.last
+    ) {
         throw ContentRowRangeException(this, inputRange)
     }
 
@@ -38,7 +44,9 @@ internal fun GUIContents.checkRowRange(inputRange: IntRange): Boolean {
 }
 
 internal fun GUIContents.checkColumnRange(inputRange: IntRange): Boolean {
-    if (inputRange.first < 1 || inputRange.last > 9) {
+    if (inputRange.first < DEFAULT_COLUMNS.first ||
+        inputRange.last > DEFAULT_COLUMNS.last
+    ) {
         throw ContentColumnRangeException(this, inputRange)
     }
 
@@ -46,7 +54,7 @@ internal fun GUIContents.checkColumnRange(inputRange: IntRange): Boolean {
 }
 
 internal fun GUIContents.checkRows(row: Int): Boolean {
-    if (row !in 1..6) {
+    if (row !in DEFAULT_ROWS) {
         throw InvalidRowException(this.guiClass, row)
     }
 
@@ -54,7 +62,7 @@ internal fun GUIContents.checkRows(row: Int): Boolean {
 }
 
 internal fun GUIContents.checkColumns(column: Int): Boolean {
-    if (column !in 1..9) {
+    if (column !in DEFAULT_COLUMNS) {
         throw InvalidColumnException(this.guiClass, column)
     }
 

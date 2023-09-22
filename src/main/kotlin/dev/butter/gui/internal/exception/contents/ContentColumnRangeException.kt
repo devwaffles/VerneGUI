@@ -8,5 +8,5 @@ internal class ContentColumnRangeException(
     override val contents: GUIContents,
     override val inputRange: IntRange,
 ) : ContentException(
-    "Invalid column range entered: $inputRange in inventory owned by ${contents.inventory.holder ?: "nobody (static gui)"}. Inventory columns must be between $DEFAULT_COLUMNS."
+    "Invalid column range entered: $inputRange in inventory owned by ${contents.gui.inventory.holder ?: "nobody (static gui)"}. Inventory columns must be between $DEFAULT_COLUMNS."
 )

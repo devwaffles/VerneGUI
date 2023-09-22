@@ -9,7 +9,7 @@ internal class ContentRowRangeException(
     override val inputRange: IntRange,
 ) : ContentException(
     "Invalid row range entered: $inputRange in inventory owned by " +
-    "${contents.inventory.holder ?: "nobody (static gui)"}. Inventory rows " +
+    "${contents.gui.inventory.holder ?: "nobody (static gui)"}. Inventory rows " +
     "must be between $DEFAULT_ROWS."
 )
 

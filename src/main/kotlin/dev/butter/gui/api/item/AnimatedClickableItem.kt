@@ -9,7 +9,6 @@ data class AnimatedClickableItem(
     override val tickSpeed: Long,
     override val cycleItems: List<ItemStack>,
     override val action: InventoryAction,
-    override val currentIndex: Int = 0,
 ) : GUIItem(slot, cycleItems.first()), Clickable, Animated {
     constructor(
         row: Int,

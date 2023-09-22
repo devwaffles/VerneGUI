@@ -7,7 +7,7 @@ private constructor(
     open val row: Int,
     open val column: Int,
     open val slot: Int,
-    open val item: ItemStack,
+    open var item: ItemStack,
 ) {
     constructor(
         slot: Int,

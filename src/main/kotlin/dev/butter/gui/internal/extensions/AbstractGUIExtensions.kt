@@ -2,9 +2,10 @@ package dev.butter.gui.internal.extensions
 
 import dev.butter.gui.api.annotation.GUISize
 import dev.butter.gui.api.annotation.GUITitle
+import dev.butter.gui.api.annotation.TypeAlias
 import dev.butter.gui.api.base.GUIContents
 import dev.butter.gui.api.base.VerneBaseGUI
-import dev.butter.gui.api.type.GUIType
+import dev.butter.gui.api.item.Animated
 import dev.butter.gui.api.type.GUIType.STATIC
 import dev.butter.gui.internal.InternalGUIHandler.dependencyMap
 import dev.butter.gui.internal.InternalGUIHandler.playerDependencyMap
@@ -16,11 +17,11 @@ import org.bukkit.plugin.java.JavaPlugin
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 
-internal fun <G : VerneBaseGUI> KClass<G>.validateDependencies(type: GUIType) =
+internal fun <G : KClass<out VerneBaseGUI>> G.validateDependencies() =
     this.annotatedDependencyFields()
         .filterValues(playerDependencyMap.keys::contains)
         .forEach { (field, clazz) ->
-            if (type == STATIC) {
+            if (this.findAnnotation<TypeAlias>()!!.type == STATIC) {
                 throw PlayerDependencyInStaticGUIException(clazz, this, field.name)
             }
         }
@@ -33,7 +34,7 @@ internal inline fun <reified G : VerneBaseGUI> G.init(
     val title = G::class.findAnnotation<GUITitle>()!!.value
 
     this.gui = plugin.server.createInventory(this, rows * 9, title)
-    this.contents = GUIContents(G::class, this.gui)
+    this.contents = GUIContents(this)
     this.owner = owner
 }
 
@@ -60,7 +61,8 @@ internal inline fun <reified G : VerneBaseGUI> G.injectPlayerDependencies(player
     }
 
 internal fun VerneBaseGUI.update() {
+    val animatedItems = this.contents.items.filterIsInstance<Animated>()
+
     this.contents.clear()
-    this.createContents()
-    this.contents.init()
+    this.contents.items.removeIf {  }
 }

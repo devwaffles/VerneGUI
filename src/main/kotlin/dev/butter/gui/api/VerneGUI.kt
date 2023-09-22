@@ -97,6 +97,14 @@ interface VerneGUI {
         init: PlayerDependencyInit<T>,
     )
 
+    fun <D : KClass<T>, T : Any> registerDependency(
+        vararg dependencyPair: Pair<D, DependencyInit<T>>,
+    )
+
+    fun <D : KClass<T>, T : Any> registerDependency(
+        vararg dependencyPair: Pair<D, PlayerDependencyInit<T>>,
+    )
+
     /**
      * The registerSingleton method is used to register
      * dependencies that have a no args constructor and

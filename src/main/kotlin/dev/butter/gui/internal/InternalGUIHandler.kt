@@ -6,6 +6,9 @@ import dev.butter.gui.api.annotation.TypeAlias
 import dev.butter.gui.api.base.VerneBaseGUI
 import dev.butter.gui.api.type.GUIType.DYNAMIC
 import dev.butter.gui.api.type.GUIType.STATIC
+import dev.butter.gui.internal.InternalGUIHandler.dynamicGuiSet
+import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
+import dev.butter.gui.internal.InternalGUIHandler.plugin
 import dev.butter.gui.internal.exception.dependency.AlreadyRegisteredException
 import dev.butter.gui.internal.exception.dependency.MissingNoArgsConstructorException
 import dev.butter.gui.internal.exception.dependency.SingletonRegisteredException
@@ -13,6 +16,7 @@ import dev.butter.gui.internal.exception.gui.*
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.listener.VerneGUIListener
+import dev.butter.gui.internal.update.GUIUpdater
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -28,7 +32,7 @@ internal typealias PlayerDependencyInit<T> = (Player, JavaPlugin) -> T
 
 internal object InternalGUIHandler {
     private val guiSet: MutableSet<GUIClass> = mutableSetOf()
-    private val dynamicGuiSet: MutableSet<GUIClass> = mutableSetOf()
+    internal val dynamicGuiSet: MutableSet<GUIClass> = mutableSetOf()
     private val staticGuiSet: MutableSet<GUIClass> = mutableSetOf()
     internal val nonPlayerGuiInstances: MutableSet<VerneBaseGUI> = mutableSetOf()
     internal val playerGuiInstances: MutableMap<UUID, Set<VerneBaseGUI>> = mutableMapOf()
@@ -44,12 +48,13 @@ internal object InternalGUIHandler {
             return
         }
 
-        plugin.server.pluginManager.registerEvents(PlayerLoginListener, plugin)
-        plugin.server.pluginManager.registerEvents(VerneGUIListener, plugin)
-
         sortGuiSet()
         initStaticGuis()
         initDynamicGuis()
+
+        plugin.server.scheduler.runTaskTimer(plugin, GUIUpdater as Runnable, 0L, 1L)
+        plugin.server.pluginManager.registerEvents(PlayerLoginListener, plugin)
+        plugin.server.pluginManager.registerEvents(VerneGUIListener, plugin)
     }
 
     internal fun register(gui: GUIClass) = when {
@@ -148,7 +153,8 @@ internal object InternalGUIHandler {
             ?: throw UnregisteredGUIException(gui)
     }
 
-    internal fun getGuis(player: Player) = playerGuiInstances[player.uniqueId]!!.toSet()
+    internal fun getGuis(player: Player) =
+        playerGuiInstances[player.uniqueId]!!.toSet()
 
     @Suppress("UNCHECKED_CAST")
     internal fun <G : VerneBaseGUI> get(
@@ -176,15 +182,15 @@ internal object InternalGUIHandler {
         .forEach(nonPlayerGuiInstances::add)
 
     private fun initDynamicGuis() = plugin.server.onlinePlayers
-        .forEach { player -> player.registerPlayer() }
+        .forEach(Player::registerPlayer)
+}
 
-    internal fun Player.registerPlayer() {
-        playerGuiInstances += this.uniqueId to dynamicGuiSet
-            .asSequence()
-            .map(GUIClass::createInstance)
-            .onEach(VerneBaseGUI::injectNonPlayerDependencies)
-            .onEach { gui -> gui.injectPlayerDependencies(this) }
-            .onEach { gui -> gui.init(this, plugin) }
-            .toSet()
-    }
+internal fun Player.registerPlayer() {
+    playerGuiInstances += this.uniqueId to dynamicGuiSet
+        .asSequence()
+        .map(GUIClass::createInstance)
+        .onEach(VerneBaseGUI::injectNonPlayerDependencies)
+        .onEach { gui -> gui.injectPlayerDependencies(this) }
+        .onEach { gui -> gui.init(this, plugin) }
+        .toSet()
 }

@@ -6,7 +6,7 @@ data class ClickableItem(
     override val row: Int,
     override val column: Int,
     override val slot: Int,
-    override val item: ItemStack,
+    override var item: ItemStack,
     override val action: InventoryAction,
 ) : GUIItem(slot, item), Clickable {
     constructor(

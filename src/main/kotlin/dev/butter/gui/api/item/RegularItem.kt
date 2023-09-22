@@ -6,7 +6,7 @@ data class RegularItem(
     override val row: Int,
     override val column: Int,
     override val slot: Int,
-    override val item: ItemStack
+    override var item: ItemStack
 ) : GUIItem(slot, item) {
     constructor(
         row: Int,

@@ -9,6 +9,6 @@ internal class ContentSlotRangeException(
     override val inputRange: IntRange,
 ) : ContentException(
     "Invalid slot range entered: $inputRange in inventory owned by " +
-    "${contents.inventory.holder ?: "nobody (static gui)"}. Inventory slots " +
+    "${contents.gui.inventory.holder ?: "nobody (static gui)"}. Inventory slots " +
     "must be in ${contents.slotRange}."
 )
