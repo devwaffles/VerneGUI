@@ -172,7 +172,6 @@ internal object InternalGUIHandler {
         }
 
     private fun initStaticGuis() = staticGuiSet
-        .asSequence()
         .map(GUIClass::createInstance)
         .onEach(VerneBaseGUI::injectNonPlayerDependencies)
         .onEach { gui -> gui.init(null, plugin) }
