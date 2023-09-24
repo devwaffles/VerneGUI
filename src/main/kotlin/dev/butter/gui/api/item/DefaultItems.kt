@@ -1,9 +1,18 @@
 package dev.butter.gui.api.item
 
+import dev.butter.gui.api.item.DefaultItems.Companion.conditionPane
 import dev.butter.gui.api.item.builder.item
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
+/**
+ * Default items for GUIs.
+ *
+ * This uses the ItemBuilder class to create the items.
+ *
+ * The [conditionPane] function is used to return a green
+ * or red pane depending on the condition.
+ */
 enum class DefaultItems(val item: ItemStack) {
     FILLER_PANE(
         item {

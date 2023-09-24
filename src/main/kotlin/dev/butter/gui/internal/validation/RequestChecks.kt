@@ -2,7 +2,7 @@ package dev.butter.gui.internal.validation
 
 import dev.butter.gui.internal.InternalGUIHandler.dynamicGuis
 import dev.butter.gui.internal.InternalGUIHandler.staticGuis
-import dev.butter.gui.internal.types.GUIClass
+import dev.butter.gui.api.type.GUIClass
 
 internal fun validateStatic(gui: GUIClass) {
     check(gui in staticGuis) {

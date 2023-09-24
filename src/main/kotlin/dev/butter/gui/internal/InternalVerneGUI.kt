@@ -2,10 +2,10 @@ package dev.butter.gui.internal
 
 import dev.butter.gui.api.VerneGUI
 import dev.butter.gui.api.base.BaseGUI
-import dev.butter.gui.internal.types.AnyClass
-import dev.butter.gui.internal.types.DependencyInit
-import dev.butter.gui.internal.types.GUIClass
-import dev.butter.gui.internal.types.PlayerDependencyInit
+import dev.butter.gui.api.type.AnyClass
+import dev.butter.gui.api.type.DependencyInit
+import dev.butter.gui.api.type.GUIClass
+import dev.butter.gui.api.type.PlayerDependencyInit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.reflect.KClass

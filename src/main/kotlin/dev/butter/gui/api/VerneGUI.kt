@@ -1,11 +1,11 @@
 package dev.butter.gui.api
 
 import dev.butter.gui.api.base.BaseGUI
+import dev.butter.gui.api.type.AnyClass
+import dev.butter.gui.api.type.DependencyInit
+import dev.butter.gui.api.type.GUIClass
+import dev.butter.gui.api.type.PlayerDependencyInit
 import dev.butter.gui.internal.InternalVerneGUI
-import dev.butter.gui.internal.types.AnyClass
-import dev.butter.gui.internal.types.DependencyInit
-import dev.butter.gui.internal.types.GUIClass
-import dev.butter.gui.internal.types.PlayerDependencyInit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -46,6 +46,7 @@ interface VerneGUI {
      * @see dev.butter.gui.api.annotation.GUITitle
      * @see dev.butter.gui.api.annotation.GUISize
      * @see dev.butter.gui.api.annotation.TypeAlias
+     * @see dev.butter.gui.api.annotation.ClickDelay
      *
      * @param guis The GUI kotlin classes to register.
      * @return Unit
@@ -101,10 +102,36 @@ interface VerneGUI {
         init: PlayerDependencyInit<T>,
     )
 
+    /**
+     * The registerDependency method is used to register
+     * multiple dependencies that either have a custom init
+     * function or do not have no args constructors. Pass in
+     * the dependency kotlin class along with the init function
+     * as a pair that will be used to construct the dependency
+     * instances.
+     *
+     * @see dev.butter.gui.api.annotation.Dependency
+     *
+     * @param dependencyPair The dependency kotlin class and init function pair to register.
+     * @return Unit
+     */
     fun <D : KClass<T>, T : Any> registerDependency(
         vararg dependencyPair: Pair<D, DependencyInit<T>>,
     )
 
+    /**
+     * The registerDependency method is used to register
+     * multiple player dependencies that either have a custom init
+     * function or do not have no args constructors. Pass in
+     * the dependency kotlin class along with the init function
+     * as a pair that will be used to construct the player dependency
+     * instances.
+     *
+     * @see dev.butter.gui.api.annotation.Dependency
+     *
+     * @param dependencyPair The dependency kotlin class and init function pair to register.
+     * @return Unit
+     */
     fun <D : KClass<T>, T : Any> registerPlayerDependency(
         vararg dependencyPair: Pair<D, PlayerDependencyInit<T>>,
     )

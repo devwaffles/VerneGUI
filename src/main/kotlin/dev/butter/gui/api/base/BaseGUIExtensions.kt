@@ -6,6 +6,9 @@ import org.bukkit.entity.Player
 
 infix fun BaseGUI.open(player: Player) = player open this
 
+/**
+ * Updates the GUI's contents.
+ */
 fun BaseGUI.update() {
     this.createContents()
     this.contents.init()

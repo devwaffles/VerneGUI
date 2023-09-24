@@ -9,10 +9,10 @@ import dev.butter.gui.internal.InternalGUIHandler.plugin
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.listener.VerneGUIListener
-import dev.butter.gui.internal.types.AnyClass
-import dev.butter.gui.internal.types.DependencyInit
-import dev.butter.gui.internal.types.GUIClass
-import dev.butter.gui.internal.types.PlayerDependencyInit
+import dev.butter.gui.api.type.AnyClass
+import dev.butter.gui.api.type.DependencyInit
+import dev.butter.gui.api.type.GUIClass
+import dev.butter.gui.api.type.PlayerDependencyInit
 import dev.butter.gui.internal.updater.GUIUpdater
 import dev.butter.gui.internal.validation.*
 import dev.butter.gui.internal.validation.DependencyType.*

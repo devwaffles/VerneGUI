@@ -11,8 +11,8 @@ import dev.butter.gui.internal.InternalGUIHandler.singletons
 import dev.butter.gui.internal.extensions.clickDelay
 import dev.butter.gui.internal.extensions.hasNoArgsConstructor
 import dev.butter.gui.internal.extensions.rows
-import dev.butter.gui.internal.types.AnyClass
-import dev.butter.gui.internal.types.GUIClass
+import dev.butter.gui.api.type.AnyClass
+import dev.butter.gui.api.type.GUIClass
 import dev.butter.gui.internal.validation.DependencyType.*
 import dev.butter.gui.internal.validation.RangeConstants.CLICK_DELAYS
 import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_ROWS
