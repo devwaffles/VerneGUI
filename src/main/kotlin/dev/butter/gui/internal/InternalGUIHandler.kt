@@ -1,15 +1,11 @@
 package dev.butter.gui.internal
 
-import dev.butter.gui.api.annotation.GUISize
-import dev.butter.gui.api.annotation.GUITitle
-import dev.butter.gui.api.annotation.TypeAlias
 import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.type.GUIType.DYNAMIC
 import dev.butter.gui.api.type.GUIType.STATIC
-import dev.butter.gui.internal.exception.dependency.AlreadyRegisteredException
-import dev.butter.gui.internal.exception.dependency.MissingNoArgsConstructorException
-import dev.butter.gui.internal.exception.dependency.SingletonRegisteredException
-import dev.butter.gui.internal.exception.gui.*
+import dev.butter.gui.internal.InternalGUIHandler.dynamicGuis
+import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
+import dev.butter.gui.internal.InternalGUIHandler.plugin
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.listener.VerneGUIListener
@@ -18,29 +14,31 @@ import dev.butter.gui.internal.types.DependencyInit
 import dev.butter.gui.internal.types.GUIClass
 import dev.butter.gui.internal.types.PlayerDependencyInit
 import dev.butter.gui.internal.updater.GUIUpdater
+import dev.butter.gui.internal.validation.*
+import dev.butter.gui.internal.validation.DependencyType.*
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 
 internal object InternalGUIHandler {
-    private val guiSet: MutableSet<GUIClass> = mutableSetOf()
-    internal val dynamicGuiSet: MutableSet<GUIClass> = mutableSetOf()
-    internal val staticGuiSet: MutableSet<GUIClass> = mutableSetOf()
+    private val guis: MutableSet<GUIClass> = mutableSetOf()
+    internal val dynamicGuis: MutableSet<GUIClass> = mutableSetOf()
+    internal val staticGuis: MutableSet<GUIClass> = mutableSetOf()
+    internal val guiDelays: MutableMap<GUIClass, Long> = mutableMapOf()
     internal val nonPlayerGuiInstances: MutableSet<BaseGUI> = mutableSetOf()
     internal val playerGuiInstances: MutableMap<UUID, Set<BaseGUI>> = mutableMapOf()
-    internal val dependencyMap: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
-    internal val playerDependencyMap: MutableMap<AnyClass, PlayerDependencyInit<*>> = mutableMapOf()
-    internal val singletonMap: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
+    internal val nonPlayerDependencies: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
+    internal val playerDependencies: MutableMap<AnyClass, PlayerDependencyInit<*>> = mutableMapOf()
+    internal val singletons: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
     internal lateinit var plugin: JavaPlugin
+    internal val isInitialized get() = ::plugin.isInitialized
 
     internal fun init(plugin: JavaPlugin) {
         this.plugin = plugin
 
-        if (guiSet.isEmpty()) {
+        if (guis.isEmpty()) {
             return
         }
 
@@ -53,33 +51,19 @@ internal object InternalGUIHandler {
         plugin.server.pluginManager.registerEvents(VerneGUIListener, plugin)
     }
 
-    internal fun register(gui: GUIClass) = when {
-        !gui.hasNoArgsConstructor ->
-            throw MissingNoArgsConstructorException(gui)
+    internal fun register(gui: GUIClass) {
+        validateUninitialized()
+        validate(gui)
 
-        !gui.hasAnnotation<TypeAlias>() ->
-            throw MissingTypeAliasException(gui)
-
-        !gui.hasAnnotation<GUITitle>() ->
-            throw MissingGUITitleException(gui)
-
-        !gui.hasAnnotation<GUISize>() ->
-            throw MissingGUISizeException(gui)
-
-        else -> guiSet += gui
+        guis += gui
+        guiDelays += gui to gui.clickDelay
     }
 
-    internal fun registerDependency(dependency: AnyClass) = when {
-        !dependency.hasNoArgsConstructor ->
-            throw MissingNoArgsConstructorException(dependency)
+    internal fun registerDependency(dependency: AnyClass) {
+        validateUninitialized()
+        validate(DEPENDENCY, dependency, true)
 
-        dependency in dependencyMap.keys ->
-            throw SingletonRegisteredException(dependency, false)
-
-        dependency in singletonMap.keys ->
-            throw SingletonRegisteredException(dependency, true)
-
-        else -> dependencyMap +=
+        nonPlayerDependencies +=
             dependency to { dependency.noArgsConstructor()!!.call() }
     }
 
@@ -87,53 +71,41 @@ internal object InternalGUIHandler {
         dependency: D,
         init: DependencyInit<T>,
     ) {
-        if (dependency in dependencyMap.keys) {
-            throw AlreadyRegisteredException(dependency)
-        }
+        validateUninitialized()
+        validate(DEPENDENCY, dependency, false)
 
-        dependencyMap += dependency to init
+        nonPlayerDependencies += dependency to init
     }
 
     internal fun <D : KClass<T>, T : Any> registerPlayerDependency(
         dependency: D,
         init: PlayerDependencyInit<T>,
     ) {
-        if (dependency in playerDependencyMap.keys) {
-            throw AlreadyRegisteredException(dependency)
-        }
+        validateUninitialized()
+        validate(PLAYER_DEPENDENCY, dependency, false)
 
-        playerDependencyMap += dependency to init
+        playerDependencies += dependency to init
     }
 
-    internal fun registerSingleton(dependency: AnyClass) = when {
-        !dependency.hasNoArgsConstructor ->
-            throw MissingNoArgsConstructorException(dependency)
+    internal fun registerSingleton(dependency: AnyClass) {
+        validateUninitialized()
+        validate(SINGLETON, dependency, true)
 
-        dependency in dependencyMap.keys ->
-            throw SingletonRegisteredException(dependency, false)
+        val constructor = dependency.noArgsConstructor()!!
+        val instance = constructor.call()
 
-        dependency in singletonMap.keys ->
-            throw SingletonRegisteredException(dependency, true)
-
-        else -> {
-            val constructor = dependency.noArgsConstructor()!!
-            val instance = constructor.call()
-
-            singletonMap += dependency to { instance }
-        }
+        singletons += dependency to { instance }
     }
 
     @Suppress("UNCHECKED_CAST")
     internal fun <G : BaseGUI> getMapping(
         gui: KClass<G>
     ): Map<UUID, G> {
-        if (gui in staticGuiSet) {
-            throw StaticGUIRequestException(gui)
-        }
+        validateRegistered(gui)
+        validateNonStatic(gui)
 
         return playerGuiInstances.mapValues { guiList ->
-            guiList.find(gui::isInstance) as? G
-                ?: throw UnregisteredGUIException(gui)
+            guiList.find(gui::isInstance) as G
         }
     }
 
@@ -141,41 +113,48 @@ internal object InternalGUIHandler {
     internal fun <G : BaseGUI> getStatic(
         gui: KClass<G>
     ): G {
-        if (gui in dynamicGuiSet) {
-            throw DynamicGUIRequestException(gui)
-        }
+        validateRegistered(gui)
+        validateStatic(gui)
 
-        return nonPlayerGuiInstances.find(gui::isInstance) as? G
-            ?: throw UnregisteredGUIException(gui)
+        return nonPlayerGuiInstances.find(gui::isInstance) as G
     }
 
-    internal fun getGuis(player: Player) =
-        playerGuiInstances[player.uniqueId]!!.toSet()
+    internal fun getGuis(player: Player) = playerGuiInstances[player.uniqueId]!!.toSet()
 
     @Suppress("UNCHECKED_CAST")
     internal fun <G : BaseGUI> get(
         gui: KClass<G>,
         player: Player,
-    ) = this.getGuis(player).find(gui::isInstance) as? G
-        ?: throw UnregisteredGUIException(gui)
+    ): G {
+        validateRegistered(gui)
+        validateNonStatic(gui)
 
-    private fun sortGuiSet() = guiSet
-        .associateWithNotNull<GUIClass, TypeAlias>(GUIClass::findAnnotation)
-        .mapValues(TypeAlias::type)
+        return this.getGuis(player).find(gui::isInstance) as G
+    }
+
+    private fun sortGuiSet() = guis
+        .associateWith(GUIClass::type)
         .onEachKey(GUIClass::validateDependencies)
         .forEach { (gui, type) ->
             when (type) {
-                DYNAMIC -> dynamicGuiSet += gui
-                STATIC -> staticGuiSet += gui
+                DYNAMIC -> dynamicGuis += gui
+                STATIC -> staticGuis += gui
             }
         }
 
-    private fun initStaticGuis() = staticGuiSet
+    private fun initStaticGuis() = staticGuis
         .map(GUIClass::createInstance)
-        .onEach(BaseGUI::injectNonPlayerDependencies)
         .onEach { gui -> gui.init(null, plugin) }
         .forEach(nonPlayerGuiInstances::add)
 
     private fun initDynamicGuis() = plugin.server.onlinePlayers
         .forEach(Player::registerPlayer)
+}
+
+internal fun Player.registerPlayer() {
+    playerGuiInstances += this.uniqueId to dynamicGuis
+        .asSequence()
+        .map(GUIClass::createInstance)
+        .onEach { gui -> gui.init(this, plugin) }
+        .toSet()
 }

@@ -1,18 +1,17 @@
 package dev.butter.gui.api.base
 
-import dev.butter.gui.internal.extensions.open
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.plugin.java.JavaPlugin
 
 abstract class BaseGUI : InventoryHolder {
+    lateinit var plugin: JavaPlugin internal set
+    lateinit var owner: Player internal set
+    lateinit var contents: GUIContents internal set
     internal lateinit var gui: Inventory
-    internal var owner: Player? = null
-    lateinit var contents: GUIContents
 
     abstract fun createContents()
 
     override fun getInventory(): Inventory = gui
-
-    infix fun open(player: Player) = player open this
 }

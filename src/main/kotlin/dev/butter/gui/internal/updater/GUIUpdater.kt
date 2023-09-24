@@ -2,13 +2,13 @@ package dev.butter.gui.internal.updater
 
 import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.base.GUIContents
-import dev.butter.gui.api.item.Animated
-import dev.butter.gui.api.item.GUIItem
+import dev.butter.gui.api.base.update
+import dev.butter.gui.api.item.types.Animated
+import dev.butter.gui.api.item.types.GUIItem
 import dev.butter.gui.internal.InternalGUIHandler.nonPlayerGuiInstances
 import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.updater.GUIUpdater.currentTick
-import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_DELAYS
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -20,17 +20,14 @@ internal object GUIUpdater : BukkitRunnable() {
         updateDynamicGuis()
 
         currentTick++
-
-        if (currentTick == DEFAULT_DELAYS.last) {
-            currentTick = 0L
-        }
     }
 
     private fun updateStaticGuis() {
         nonPlayerGuiInstances
             .map(BaseGUI::contents)
             .filter(GUIContents::hasAnimatedItems)
-            .flatMap(GUIContents::items)
+            .map(GUIContents::items)
+            .flatMap(MutableMap<Int, GUIItem>::values)
             .associateWithNotNull { it as? Animated }
             .filterValues(Animated::onTick)
             .mapValues(Animated::cycleItems)
@@ -44,7 +41,8 @@ internal object GUIUpdater : BukkitRunnable() {
             .flatten()
             .map(BaseGUI::contents)
             .filter(GUIContents::hasAnimatedItems)
-            .flatMap(GUIContents::items)
+            .map(GUIContents::items)
+            .flatMap(MutableMap<Int, GUIItem>::values)
             .associateWithNotNull { it as? Animated }
             .filterValues(Animated::onTick)
             .mapValues(Animated::cycleItems)

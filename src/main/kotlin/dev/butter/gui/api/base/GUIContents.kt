@@ -1,8 +1,8 @@
 package dev.butter.gui.api.base
 
-import dev.butter.gui.api.item.GUIItem
+import dev.butter.gui.api.item.types.GUIItem
 
 data class GUIContents(
     val gui: BaseGUI,
-    val items: MutableList<GUIItem> = mutableListOf(),
+    val items: MutableMap<Int, GUIItem> = mutableMapOf(),
 )

@@ -1,17 +1,15 @@
 package dev.butter.gui.api.base
 
-import dev.butter.gui.api.item.*
+import dev.butter.gui.api.item.types.*
 import dev.butter.gui.internal.validation.*
 import org.bukkit.inventory.ItemStack
 
-fun GUIContents.fill(item: ItemStack) =
-    this.slotRange.forEach { slot ->
-        if (this.items.any { it.slot == slot }) {
-            return@forEach
-        }
+fun slotOf(row: Int, column: Int) =
+    (row - 1) * 9 + (column - 1)
 
-        this.set(slot, item)
-    }
+fun GUIContents.fill(item: ItemStack) = this.slotRange
+    .filterNot(this.items.keys::contains)
+    .forEach { slot -> this.set(slot, item) }
 
 fun GUIContents.set(
     row: Int,
@@ -21,7 +19,8 @@ fun GUIContents.set(
     checkRows(row)
     checkColumns(column)
 
-    this.items += RegularItem(row, column, item)
+    val slot = slotOf(row, column)
+    this.items += slot to RegularItem(item)
 }
 
 fun GUIContents.set(
@@ -33,7 +32,7 @@ fun GUIContents.set(
     checkColumns(column)
 
     rows.forEach { row ->
-        this.items += RegularItem(row, column, item)
+        set(row, column, item)
     }
 }
 
@@ -46,7 +45,7 @@ fun GUIContents.set(
     checkColumnRange(columns)
 
     columns.forEach { column ->
-        this.items += RegularItem(row, column, item)
+        set(row, column, item)
     }
 }
 
@@ -56,7 +55,7 @@ fun GUIContents.set(
 ) {
     checkSlots(slot)
 
-    this.items += RegularItem(slot, item)
+    this.items += slot to RegularItem(item)
 }
 
 fun GUIContents.set(
@@ -66,11 +65,21 @@ fun GUIContents.set(
     checkSlotRange(slots)
 
     slots.forEach { slot ->
-        this.items += RegularItem(slot, item)
+        set(slot, item)
     }
 }
 
-fun GUIContents.setClickable(
+fun GUIContents.set(
+    slot: Int,
+    item: ItemStack,
+    action: InventoryAction,
+) {
+    checkSlots(slot)
+
+    this.items += slot to ClickableItem(item, action)
+}
+
+fun GUIContents.set(
     row: Int,
     column: Int,
     item: ItemStack,
@@ -79,20 +88,21 @@ fun GUIContents.setClickable(
     checkRows(row)
     checkColumns(column)
 
-    this.items += ClickableItem(row, column, item, action)
+    set(slotOf(row, column), item, action)
 }
 
-fun GUIContents.setClickable(
+fun GUIContents.set(
     slot: Int,
-    item: ItemStack,
-    action: InventoryAction,
+    tickSpeed: Long,
+    vararg cycleItems: ItemStack
 ) {
     checkSlots(slot)
+    checkDelays(tickSpeed)
 
-    this.items += ClickableItem(slot, item, action)
+    this.items += slot to AnimatedItem(tickSpeed, cycleItems.toList(), checkAnimated(slot) ?: cycleItems.first())
 }
 
-fun GUIContents.setAnimated(
+fun GUIContents.set(
     row: Int,
     column: Int,
     tickSpeed: Long,
@@ -102,10 +112,10 @@ fun GUIContents.setAnimated(
     checkColumns(column)
     checkDelays(tickSpeed)
 
-    this.items += AnimatedItem(row, column, tickSpeed, *cycleItems)
+    set(slotOf(row, column), tickSpeed, *cycleItems)
 }
 
-fun GUIContents.setAnimated(
+fun GUIContents.set(
     rows: IntRange,
     column: Int,
     tickSpeed: Long,
@@ -116,11 +126,11 @@ fun GUIContents.setAnimated(
     checkDelays(tickSpeed)
 
     rows.forEach { row ->
-        this.items += AnimatedItem(row, column, tickSpeed, *cycleItems)
+        set(row, column, tickSpeed, *cycleItems)
     }
 }
 
-fun GUIContents.setAnimated(
+fun GUIContents.set(
     row: Int,
     columns: IntRange,
     tickSpeed: Long,
@@ -131,22 +141,23 @@ fun GUIContents.setAnimated(
     checkDelays(tickSpeed)
 
     columns.forEach { column ->
-        this.items += AnimatedItem(row, column, tickSpeed, *cycleItems)
+        set(row, column, tickSpeed, *cycleItems)
     }
 }
 
-fun GUIContents.setAnimated(
+fun GUIContents.set(
     slot: Int,
     tickSpeed: Long,
-    vararg cycleItems: ItemStack
+    cycleItems: List<ItemStack>,
+    action: InventoryAction,
 ) {
     checkSlots(slot)
     checkDelays(tickSpeed)
 
-    this.items += AnimatedItem(slot, tickSpeed, *cycleItems)
+    this.items += slot to AnimatedClickableItem(tickSpeed, cycleItems, action, checkAnimated(slot) ?: cycleItems.first())
 }
 
-fun GUIContents.setAnimatedClickable(
+fun GUIContents.set(
     row: Int,
     column: Int,
     tickSpeed: Long,
@@ -157,17 +168,68 @@ fun GUIContents.setAnimatedClickable(
     checkColumns(column)
     checkDelays(tickSpeed)
 
-    this.items += AnimatedClickableItem(row, column, tickSpeed, cycleItems, action)
+    set(slotOf(row, column), tickSpeed, cycleItems, action)
 }
 
-fun GUIContents.setAnimatedClickable(
-    slot: Int,
+fun GUIContents.set(
+    rows: IntRange,
+    column: Int,
     tickSpeed: Long,
     cycleItems: List<ItemStack>,
     action: InventoryAction,
 ) {
-    checkSlots(slot)
+    checkRowRange(rows)
+    checkColumns(column)
     checkDelays(tickSpeed)
 
-    this.items += AnimatedClickableItem(slot, tickSpeed, cycleItems, action)
+    rows.forEach { row ->
+        set(row, column, tickSpeed, cycleItems, action)
+    }
+}
+
+fun GUIContents.set(
+    row: Int,
+    columns: IntRange,
+    tickSpeed: Long,
+    cycleItems: List<ItemStack>,
+    action: InventoryAction,
+) {
+    checkRows(row)
+    checkColumnRange(columns)
+    checkDelays(tickSpeed)
+
+    columns.forEach { column ->
+        set(row, column, tickSpeed, cycleItems, action)
+    }
+}
+
+fun GUIContents.close(
+    slot: Int,
+    item: ItemStack,
+) {
+    checkSlots(slot)
+
+    this.items += slot to ClickableItem(item) { player, _ -> player.closeInventory() }
+}
+
+fun GUIContents.close(
+    row: Int,
+    column: Int,
+    item: ItemStack,
+) {
+    checkRows(row)
+    checkColumns(column)
+
+    close(slotOf(row, column), item)
+}
+
+private fun GUIContents.checkAnimated(slot: Int): ItemStack? {
+    val duplicate = this.items[slot] ?: return null
+    val animated = duplicate as? Animated ?: return null
+
+    if (duplicate.item !in animated.cycleItems) {
+        return null
+    }
+
+    return duplicate.item
 }
