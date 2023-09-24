@@ -7,7 +7,7 @@ plugins {
 
 group = "com.github.devwaffles"
 description = "VerneGUI"
-version = "1.0.3-alpha-indev6"
+version = "1.1.0-beta"
 
 kotlin {
     jvmToolchain(8)
