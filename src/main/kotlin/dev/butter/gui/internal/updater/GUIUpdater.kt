@@ -26,7 +26,7 @@ internal object GUIUpdater : BukkitRunnable() {
         nonPlayerGuiInstances
             .map(BaseGUI::contents)
             .filter(GUIContents::hasAnimatedItems)
-            .map(GUIContents::items)
+            .map(GUIContents::constantItems)
             .flatMap(MutableMap<Int, GUIItem>::values)
             .associateWithNotNull { it as? Animated }
             .filterValues(Animated::onTick)
@@ -41,7 +41,7 @@ internal object GUIUpdater : BukkitRunnable() {
             .flatten()
             .map(BaseGUI::contents)
             .filter(GUIContents::hasAnimatedItems)
-            .map(GUIContents::items)
+            .map(GUIContents::constantItems)
             .flatMap(MutableMap<Int, GUIItem>::values)
             .associateWithNotNull { it as? Animated }
             .filterValues(Animated::onTick)

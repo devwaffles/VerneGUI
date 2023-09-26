@@ -4,15 +4,15 @@ import dev.butter.gui.api.annotation.ClickDelay
 import dev.butter.gui.api.annotation.GUISize
 import dev.butter.gui.api.annotation.GUITitle
 import dev.butter.gui.api.annotation.TypeAlias
-import dev.butter.gui.internal.InternalGUIHandler
+import dev.butter.gui.api.type.AnyClass
+import dev.butter.gui.api.type.GUIClass
+import dev.butter.gui.internal.InternalGUIHandler.isInitialized
 import dev.butter.gui.internal.InternalGUIHandler.nonPlayerDependencies
 import dev.butter.gui.internal.InternalGUIHandler.playerDependencies
 import dev.butter.gui.internal.InternalGUIHandler.singletons
 import dev.butter.gui.internal.extensions.clickDelay
 import dev.butter.gui.internal.extensions.hasNoArgsConstructor
 import dev.butter.gui.internal.extensions.rows
-import dev.butter.gui.api.type.AnyClass
-import dev.butter.gui.api.type.GUIClass
 import dev.butter.gui.internal.validation.DependencyType.*
 import dev.butter.gui.internal.validation.RangeConstants.CLICK_DELAYS
 import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_ROWS
@@ -25,7 +25,7 @@ internal enum class DependencyType(val title: String) {
 }
 
 internal fun validateUninitialized() {
-    check(!InternalGUIHandler.isInitialized) {
+    check(!isInitialized()) {
         "VerneGUI is already initialized. Register before calling init()."
     }
 }

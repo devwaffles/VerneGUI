@@ -3,6 +3,8 @@ package dev.butter.gui.internal.extensions
 import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.base.GUIContents
 import dev.butter.gui.api.base.update
+import dev.butter.gui.internal.InternalGUIHandler.toInjectGuice
+import dev.butter.gui.internal.InternalGUIHandler.injector
 import dev.butter.gui.internal.InternalGUIHandler.nonPlayerDependencies
 import dev.butter.gui.internal.InternalGUIHandler.playerDependencies
 import dev.butter.gui.internal.InternalGUIHandler.singletons
@@ -18,6 +20,10 @@ internal fun BaseGUI.init(
     val title = this::class.title
 
     this.plugin = plugin
+
+    if (toInjectGuice()) {
+        injector.injectMembers(this)
+    }
 
     injectNonPlayerDependencies()
 

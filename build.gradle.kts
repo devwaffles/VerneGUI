@@ -30,6 +30,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     compileOnly("com.destroystokyo.paper:paper-api:1.9.4-R0.1-SNAPSHOT")
+    implementation("com.google.inject:guice:4.1.0")
 }
 
 publishing {

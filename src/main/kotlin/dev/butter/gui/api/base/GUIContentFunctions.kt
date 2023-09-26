@@ -14,106 +14,6 @@ fun slotOf(row: Int, column: Int) =
     (row - 1) * 9 + (column - 1)
 
 /**
- * Fills the entire GUI with a given item.
- *
- * @param item The item to fill the GUI with.
- */
-fun GUIContents.fill(item: ItemStack) = this.slotRange
-    .filterNot(this.items.keys::contains)
-    .forEach { slot -> this.set(slot, item) }
-
-/**
- * Sets the row and column provided to the given item.
- *
- * @param row The row to update.
- * @param column The column to update.
- * @param item The item to set with.
- */
-fun GUIContents.set(
-    row: Int,
-    column: Int,
-    item: ItemStack,
-) {
-    checkRows(row)
-    checkColumns(column)
-
-    val slot = slotOf(row, column)
-    this.items += slot to RegularItem(item)
-}
-
-/**
- * Sets the range of rows and column provided to the given item.
- *
- * @param rows The rows to update.
- * @param column The column to update.
- * @param item The item to set with.
- */
-fun GUIContents.set(
-    rows: IntRange,
-    column: Int,
-    item: ItemStack
-) {
-    checkRowRange(rows)
-    checkColumns(column)
-
-    rows.forEach { row ->
-        set(row, column, item)
-    }
-}
-
-/**
- * Sets the row and range of columns provided to the given item.
- *
- * @param row The row to update.
- * @param columns The columns to update.
- * @param item The item to set with.
- */
-fun GUIContents.set(
-    row: Int,
-    columns: IntRange,
-    item: ItemStack,
-) {
-    checkRows(row)
-    checkColumnRange(columns)
-
-    columns.forEach { column ->
-        set(row, column, item)
-    }
-}
-
-/**
- * Sets the slot provided to the given item.
- *
- * @param slot The slot to update.
- * @param item The item to set with.
- */
-fun GUIContents.set(
-    slot: Int,
-    item: ItemStack,
-) {
-    checkSlots(slot)
-
-    this.items += slot to RegularItem(item)
-}
-
-/**
- * Sets the range of slots provided to the given item.
- *
- * @param slots The slots to update.
- * @param item The item to set with.
- */
-fun GUIContents.set(
-    slots: IntRange,
-    item: ItemStack,
-) {
-    checkSlotRange(slots)
-
-    slots.forEach { slot ->
-        set(slot, item)
-    }
-}
-
-/**
  * Sets the slot provided to the given item and action.
  * This item will be clickable.
  *
@@ -121,6 +21,7 @@ fun GUIContents.set(
  * @param item The item to set with.
  * @param action The action to perform when clicked.
  */
+@NonPageSpecific
 fun GUIContents.set(
     slot: Int,
     item: ItemStack,
@@ -128,7 +29,7 @@ fun GUIContents.set(
 ) {
     checkSlots(slot)
 
-    this.items += slot to ClickableItem(item, action)
+    this.constantItems += slot to ClickableItem(item, action)
 }
 
 /**
@@ -140,6 +41,7 @@ fun GUIContents.set(
  * @param item The item to set with.
  * @param action The action to perform when clicked.
  */
+@NonPageSpecific
 fun GUIContents.set(
     row: Int,
     column: Int,
@@ -160,6 +62,7 @@ fun GUIContents.set(
  * @param tickSpeed The interval to cycle the items.
  * @param cycleItems The items to cycle through.
  */
+@NonPageSpecific
 fun GUIContents.set(
     slot: Int,
     tickSpeed: Long,
@@ -168,7 +71,7 @@ fun GUIContents.set(
     checkSlots(slot)
     checkDelays(tickSpeed)
 
-    this.items += slot to AnimatedItem(tickSpeed, cycleItems.toList(), checkAnimated(slot) ?: cycleItems.first())
+    this.constantItems += slot to AnimatedItem(tickSpeed, cycleItems.toList(), checkAnimated(slot) ?: cycleItems.first())
 }
 
 /**
@@ -180,6 +83,7 @@ fun GUIContents.set(
  * @param tickSpeed The interval to cycle the items.
  * @param cycleItems The items to cycle through.
  */
+@NonPageSpecific
 fun GUIContents.set(
     row: Int,
     column: Int,
@@ -202,6 +106,7 @@ fun GUIContents.set(
  * @param tickSpeed The interval to cycle the items.
  * @param cycleItems The items to cycle through.
  */
+@NonPageSpecific
 fun GUIContents.set(
     rows: IntRange,
     column: Int,
@@ -226,6 +131,7 @@ fun GUIContents.set(
  * @param tickSpeed The interval to cycle the items.
  * @param cycleItems The items to cycle through.
  */
+@NonPageSpecific
 fun GUIContents.set(
     row: Int,
     columns: IntRange,
@@ -251,6 +157,7 @@ fun GUIContents.set(
  * @param cycleItems The items to cycle through.
  * @param action The action to perform when clicked.
  */
+@NonPageSpecific
 fun GUIContents.set(
     slot: Int,
     tickSpeed: Long,
@@ -260,7 +167,7 @@ fun GUIContents.set(
     checkSlots(slot)
     checkDelays(tickSpeed)
 
-    this.items += slot to AnimatedClickableItem(tickSpeed, cycleItems, action, checkAnimated(slot) ?: cycleItems.first())
+    this.constantItems += slot to AnimatedClickableItem(tickSpeed, cycleItems, action, checkAnimated(slot) ?: cycleItems.first())
 }
 
 /**
@@ -274,6 +181,7 @@ fun GUIContents.set(
  * @param cycleItems The items to cycle through.
  * @param action The action to perform when clicked.
  */
+@NonPageSpecific
 fun GUIContents.set(
     row: Int,
     column: Int,
@@ -299,6 +207,7 @@ fun GUIContents.set(
  * @param cycleItems The items to cycle through.
  * @param action The action to perform when clicked.
  */
+@NonPageSpecific
 fun GUIContents.set(
     rows: IntRange,
     column: Int,
@@ -326,6 +235,7 @@ fun GUIContents.set(
  * @param cycleItems The items to cycle through.
  * @param action The action to perform when clicked.
  */
+@NonPageSpecific
 fun GUIContents.set(
     row: Int,
     columns: IntRange,
@@ -349,13 +259,14 @@ fun GUIContents.set(
  * @param slot The slot to update.
  * @param item The item to set with.
  */
+@NonPageSpecific
 fun GUIContents.close(
     slot: Int,
     item: ItemStack,
 ) {
     checkSlots(slot)
 
-    this.items += slot to ClickableItem(item) { player, _ -> player.closeInventory() }
+    this.constantItems += slot to ClickableItem(item) { player, _ -> player.closeInventory() }
 }
 
 /**
@@ -366,6 +277,7 @@ fun GUIContents.close(
  * @param column The column to update.
  * @param item The item to set with.
  */
+@NonPageSpecific
 fun GUIContents.close(
     row: Int,
     column: Int,
@@ -378,7 +290,7 @@ fun GUIContents.close(
 }
 
 private fun GUIContents.checkAnimated(slot: Int): ItemStack? {
-    val duplicate = this.items[slot] ?: return null
+    val duplicate = this.constantItems[slot] ?: return null
     val animated = duplicate as? Animated ?: return null
 
     if (duplicate.item !in animated.cycleItems) {

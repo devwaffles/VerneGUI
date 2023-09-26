@@ -13,5 +13,6 @@ import dev.butter.gui.api.item.types.GUIItem
  */
 data class GUIContents(
     val gui: BaseGUI,
-    val items: MutableMap<Int, GUIItem> = mutableMapOf(),
+    val constantItems: MutableMap<Int, GUIItem> = mutableMapOf(),
+    val pageItems: MutableList<GUIItem> = mutableListOf(),
 )

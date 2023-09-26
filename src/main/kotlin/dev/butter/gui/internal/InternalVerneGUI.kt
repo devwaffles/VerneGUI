@@ -1,5 +1,6 @@
 package dev.butter.gui.internal
 
+import com.google.inject.Injector
 import dev.butter.gui.api.VerneGUI
 import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.type.AnyClass
@@ -11,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import kotlin.reflect.KClass
 
 internal object InternalVerneGUI : VerneGUI {
-    override fun init(plugin: JavaPlugin) =
-        InternalGUIHandler.init(plugin)
+    override fun init(plugin: JavaPlugin, injector: Injector?) =
+        InternalGUIHandler.init(plugin, injector)
 
     override fun register(vararg guis: GUIClass) =
         guis.forEach(InternalGUIHandler::register)

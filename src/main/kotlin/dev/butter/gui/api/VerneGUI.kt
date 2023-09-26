@@ -1,5 +1,6 @@
 package dev.butter.gui.api
 
+import com.google.inject.Injector
 import dev.butter.gui.api.base.BaseGUI
 import dev.butter.gui.api.type.AnyClass
 import dev.butter.gui.api.type.DependencyInit
@@ -27,12 +28,15 @@ interface VerneGUI {
      * The init method is used to initialize the VerneGUI API.
      * Call this method within your plugin's onEnable logic and
      * pass in your plugin instance after you have registered
-     * all of your GUIs and dependencies.
+     * all of your GUIs and dependencies. If you are using
+     * the Guice dependency injection framework, you can also
+     * pass in your injector instance, and the VerneGUI API
+     * will use it to inject dependencies.
      *
      * @param plugin The plugin that is initializing the VerneGUI API.
      * @return Unit
      */
-    fun init(plugin: JavaPlugin)
+    fun init(plugin: JavaPlugin, injector: Injector? = null)
 
     /**
      * The register method is used to register GUIs.

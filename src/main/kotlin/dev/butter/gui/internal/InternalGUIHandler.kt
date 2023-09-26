@@ -1,18 +1,19 @@
 package dev.butter.gui.internal
 
+import com.google.inject.Injector
 import dev.butter.gui.api.base.BaseGUI
+import dev.butter.gui.api.type.AnyClass
+import dev.butter.gui.api.type.DependencyInit
+import dev.butter.gui.api.type.GUIClass
 import dev.butter.gui.api.type.GUIType.DYNAMIC
 import dev.butter.gui.api.type.GUIType.STATIC
+import dev.butter.gui.api.type.PlayerDependencyInit
 import dev.butter.gui.internal.InternalGUIHandler.dynamicGuis
 import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
 import dev.butter.gui.internal.InternalGUIHandler.plugin
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.listener.VerneGUIListener
-import dev.butter.gui.api.type.AnyClass
-import dev.butter.gui.api.type.DependencyInit
-import dev.butter.gui.api.type.GUIClass
-import dev.butter.gui.api.type.PlayerDependencyInit
 import dev.butter.gui.internal.updater.GUIUpdater
 import dev.butter.gui.internal.validation.*
 import dev.butter.gui.internal.validation.DependencyType.*
@@ -33,13 +34,21 @@ internal object InternalGUIHandler {
     internal val playerDependencies: MutableMap<AnyClass, PlayerDependencyInit<*>> = mutableMapOf()
     internal val singletons: MutableMap<AnyClass, DependencyInit<*>> = mutableMapOf()
     internal lateinit var plugin: JavaPlugin
-    internal val isInitialized get() = ::plugin.isInitialized
+    internal lateinit var injector: Injector
 
-    internal fun init(plugin: JavaPlugin) {
-        this.plugin = plugin
+    internal fun isInitialized() = ::plugin.isInitialized
 
+    internal fun toInjectGuice() = ::injector.isInitialized
+
+    internal fun init(plugin: JavaPlugin, injector: Injector? = null) {
         if (guis.isEmpty()) {
             return
+        }
+
+        this.plugin = plugin
+
+        if (injector != null) {
+            this.injector = injector
         }
 
         sortGuiSet()

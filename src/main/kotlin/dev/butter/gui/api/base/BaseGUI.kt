@@ -30,12 +30,24 @@ import org.bukkit.plugin.java.JavaPlugin
  * @see GUIContents
  */
 abstract class BaseGUI : InventoryHolder {
-    lateinit var plugin: JavaPlugin internal set
-    lateinit var owner: Player internal set
-    lateinit var contents: GUIContents internal set
     internal lateinit var gui: Inventory
-
-    abstract fun createContents()
+    lateinit var plugin: JavaPlugin
+        internal set
+    lateinit var owner: Player
+        internal set
+    lateinit var contents: GUIContents
+        internal set
+    lateinit var pages: IntRange
+        internal set
+    var current: Int = 1
+        internal set
 
     override fun getInventory(): Inventory = gui
 }
+
+/*
+ * setup so default contents generates the gui that is constant between pages
+ * setup so page contents generates the gui that is different between pages
+ * default contents can only call the partition method for page specific contents
+ *
+ */
