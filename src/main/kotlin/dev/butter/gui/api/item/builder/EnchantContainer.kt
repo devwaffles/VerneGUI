@@ -9,3 +9,11 @@ data class EnchantContainer(
     val enchant: Enchantment,
     val level: Int,
 )
+
+/**
+ * Creates an enchantment container.
+ */
+fun enchantOf(
+    enchant: Enchantment,
+    level: Int,
+) = EnchantContainer(enchant, level)

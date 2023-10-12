@@ -1,18 +1,20 @@
 package dev.butter.gui.internal.listener
 
-import dev.butter.gui.api.base.BaseGUI
-import dev.butter.gui.internal.InternalGUIHandler.guiDelays
+import dev.butter.gui.api.base.BaseGui
+import dev.butter.gui.internal.extensions.clickDelay
 import dev.butter.gui.internal.extensions.handle
-import dev.butter.gui.internal.updater.GUIUpdater.currentTick
+import dev.butter.gui.internal.extensions.update
+import dev.butter.gui.internal.update.AnimatedItemRunnable.currentTick
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
 import java.util.*
 
-internal object VerneGUIListener : Listener {
+internal object BaseGuiListener : Listener {
     private val playerClickTimes = mutableMapOf<UUID, Long>()
 
     @EventHandler(ignoreCancelled = true)
@@ -20,7 +22,7 @@ internal object VerneGUIListener : Listener {
         val inventory = event.inventory
         val holder = inventory.holder
 
-        if (holder !is BaseGUI) {
+        if (holder !is BaseGui) {
             return
         }
 
@@ -30,35 +32,45 @@ internal object VerneGUIListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryClickEvent) {
         val inventory = event.inventory
-        val gui = inventory.holder as? BaseGUI ?: return
+        val gui = inventory.holder as? BaseGui ?: return
         val player = event.whoClicked as? Player ?: return
-
         val slot = event.rawSlot
         val uuid = player.uniqueId
         val lastClickTime = playerClickTimes[uuid] ?: currentTick
-        val clickDelay = guiDelays[gui::class]!!
+        val clickDelay = gui::class.clickDelay
+        val previousClickDelay = currentTick - lastClickTime
+        val clickType = event.click
 
         event.isCancelled = true
 
-        if (uuid in playerClickTimes.keys && currentTick - lastClickTime < clickDelay) {
+        if (uuid in playerClickTimes.keys && previousClickDelay < clickDelay) {
             return
         }
 
         playerClickTimes[uuid] = currentTick
 
-        gui.contents.handle(player, slot, event, gui)
+        gui.contents.handle(player, slot, clickType, gui)
     }
 
     @EventHandler(ignoreCancelled = true)
+    fun on(event: InventoryOpenEvent) {
+        val inventory = event.inventory
+        val gui = inventory.holder as? BaseGui ?: return
+
+        gui.update()
+    }
+
+    @EventHandler
     fun on(event: InventoryCloseEvent) {
         val inventory = event.inventory
         val holder = inventory.holder
-        val player = event.player
 
-        if (holder !is BaseGUI) {
+        if (holder !is BaseGui) {
             return
         }
 
-        playerClickTimes.remove(player.uniqueId)
+        val player = event.player as? Player ?: return
+
+        playerClickTimes -= player.uniqueId
     }
 }

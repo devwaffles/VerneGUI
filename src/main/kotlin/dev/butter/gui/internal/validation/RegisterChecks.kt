@@ -1,34 +1,33 @@
 package dev.butter.gui.internal.validation
 
 import dev.butter.gui.api.annotation.ClickDelay
-import dev.butter.gui.api.annotation.GUISize
-import dev.butter.gui.api.annotation.GUITitle
+import dev.butter.gui.api.annotation.GuiSize
+import dev.butter.gui.api.annotation.GuiTitle
 import dev.butter.gui.api.annotation.TypeAlias
 import dev.butter.gui.api.type.AnyClass
-import dev.butter.gui.api.type.GUIClass
-import dev.butter.gui.internal.InternalGUIHandler.isInitialized
-import dev.butter.gui.internal.InternalGUIHandler.nonPlayerDependencies
-import dev.butter.gui.internal.InternalGUIHandler.playerDependencies
-import dev.butter.gui.internal.InternalGUIHandler.singletons
+import dev.butter.gui.api.type.GuiClass
+import dev.butter.gui.internal.InternalGuiHandler.dynamicDependencies
+import dev.butter.gui.internal.InternalGuiHandler.isInitialized
+import dev.butter.gui.internal.InternalGuiHandler.singletons
+import dev.butter.gui.internal.InternalGuiHandler.staticDependencies
 import dev.butter.gui.internal.extensions.clickDelay
+import dev.butter.gui.internal.extensions.hasDefaultContentsMethod
 import dev.butter.gui.internal.extensions.hasNoArgsConstructor
 import dev.butter.gui.internal.extensions.rows
 import dev.butter.gui.internal.validation.DependencyType.*
-import dev.butter.gui.internal.validation.RangeConstants.CLICK_DELAYS
-import dev.butter.gui.internal.validation.RangeConstants.DEFAULT_ROWS
+import dev.butter.gui.internal.validation.GuiConstants.CLICK_DELAYS
 import kotlin.reflect.full.hasAnnotation
 
 internal enum class DependencyType(val title: String) {
-    DEPENDENCY("Dependency"),
-    PLAYER_DEPENDENCY("Player dependency"),
+    STATIC("Static"),
+    DYNAMIC("Dynamic"),
     SINGLETON("Singleton"),
 }
 
-internal fun validateUninitialized() {
+internal fun validateUninitialized() =
     check(!isInitialized()) {
         "VerneGUI is already initialized. Register before calling init()."
     }
-}
 
 internal fun validate(
     type: DependencyType,
@@ -44,79 +43,75 @@ internal fun validate(
     checkSingletonMap(type, dependency)
 }
 
-internal fun validate(gui: GUIClass) {
-    checkNoArgsConstructor(gui)
+internal fun GuiClass.validate() {
+    checkNoArgsConstructor(this)
 
-    check(gui.hasAnnotation<TypeAlias>()) {
-        "GUI: ${gui.simpleName} does not have the annotation TypeAlias and will not be registered."
+    check(this.hasAnnotation<TypeAlias>()) {
+        "GUI: ${this.simpleName} does not have the annotation TypeAlias and will not be registered."
     }
 
-    check(gui.hasAnnotation<GUITitle>()) {
-        "GUI: ${gui.simpleName} does not have the annotation GUITitle and will not be registered."
+    check(this.hasAnnotation<GuiTitle>()) {
+        "GUI: ${this.simpleName} does not have the annotation GUITitle and will not be registered."
     }
 
-    check(gui.hasAnnotation<GUISize>()) {
-        "GUI: ${gui.simpleName} does not have the annotation GUISize and will not be registered."
+    check(this.hasAnnotation<GuiSize>()) {
+        "GUI: ${this.simpleName} does not have the annotation GUISize and will not be registered."
     }
 
-    check(gui.rows in DEFAULT_ROWS) {
-        "GUI: ${gui.simpleName} has an invalid row size (${gui.rows}) and will not be registered, must be in $DEFAULT_ROWS."
+    check(this.rows in 3..6) {
+        "GUI: ${this.simpleName} has an invalid row size (${this.rows}) and will not be registered, must be in ${3..6}."
     }
 
-    if (gui.hasAnnotation<ClickDelay>()) {
-        check(gui.clickDelay in CLICK_DELAYS) {
-            "GUI: ${gui.simpleName} has an invalid click delay (${gui.clickDelay}) and will not be registered, must be in $CLICK_DELAYS."
+    if (this.hasAnnotation<ClickDelay>()) {
+        check(this.clickDelay in CLICK_DELAYS) {
+            "GUI: ${this.simpleName} has an invalid click delay (${this.clickDelay}) and will not be registered, must be in $CLICK_DELAYS."
         }
     }
+
+    check(this.hasDefaultContentsMethod) {
+        "GUI: ${this.simpleName} does not have a method annotated with DefaultContents and will not be registered."
+    }
 }
 
-internal fun checkDependencyMap(
+private fun checkDependencyMap(
     type: DependencyType,
     clazz: AnyClass,
-) {
-    check(clazz !in nonPlayerDependencies.keys) {
+) = check(clazz !in staticDependencies.keys) {
         "${type.title}: ${clazz.simpleName} is already registered${
             when (type) {
-                DEPENDENCY -> ""
-                PLAYER_DEPENDENCY -> " as a player dependency"
+                STATIC -> ""
+                DYNAMIC -> " as a dynamic dependency"
                 SINGLETON -> " as a singleton"
             }
         }."
     }
-}
 
-internal fun checkPlayerDependencyMap(
+private fun checkPlayerDependencyMap(
     type: DependencyType,
     clazz: AnyClass,
-) {
-    check(clazz !in playerDependencies.keys) {
+) = check(clazz !in dynamicDependencies.keys) {
         "${type.title}: ${clazz.simpleName} is already registered${
             when (type) {
-                DEPENDENCY -> " as a non player dependency"
-                PLAYER_DEPENDENCY -> ""
+                STATIC -> " as a static dependency"
+                DYNAMIC -> ""
                 SINGLETON -> " as a singleton"
             }
         }."
     }
-}
 
-internal fun checkSingletonMap(
+private fun checkSingletonMap(
     type: DependencyType,
     clazz: AnyClass,
-) {
-    check(clazz !in singletons.keys) {
+) = check(clazz !in singletons.keys) {
         "${type.title}: ${clazz.simpleName} is already registered${
             when (type) {
-                DEPENDENCY -> " as a non singleton dependency"
-                PLAYER_DEPENDENCY -> " as a non singleton player dependency"
                 SINGLETON -> ""
+                else -> " as a non singleton dependency"
             }
         }."
     }
-}
 
-internal fun checkNoArgsConstructor(clazz: AnyClass) {
+private fun checkNoArgsConstructor(clazz: AnyClass) =
     check(clazz.hasNoArgsConstructor) {
         "Class: ${clazz.simpleName} does not have a no-args-constructor."
     }
-}

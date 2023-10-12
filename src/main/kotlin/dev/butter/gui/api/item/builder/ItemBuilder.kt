@@ -39,10 +39,16 @@ data class ItemBuilder(var item: ItemStack = ItemStack(AIR)) {
     var lore: MutableList<String>
         get() = this.item.itemMeta.lore ?: mutableListOf()
         set(value) {
+            if (type == AIR) {
+                return
+            }
+
             this.item.itemMeta = this.item.itemMeta.apply { lore = value }
         }
 
-    fun enchant(enchant: Enchantment, level: Int) = enchants.add(EnchantContainer(enchant, level))
+    fun enchant(enchant: Enchantment, level: Int) = enchants.add(enchantOf(enchant, level))
+
+    fun enchant(container: EnchantContainer) = enchants.add(container)
 
     fun lore(vararg lines: String) = lines.forEach(loreBuilder::add)
 
@@ -55,11 +61,11 @@ data class ItemBuilder(var item: ItemStack = ItemStack(AIR)) {
             addUnsafeEnchantment(enchant.enchant, enchant.level)
         }
 
-        lore = loreBuilder
+        this@ItemBuilder.lore = loreBuilder
     }
 }
 
 /**
  * Access the [ItemBuilder] DSL to create an [ItemStack].
  */
-fun item(init: ItemBuilder.() -> Unit) = ItemBuilder().apply(init).build()
+fun item(init: ItemBuilder.() -> Unit = {}) = ItemBuilder().apply(init).build()
