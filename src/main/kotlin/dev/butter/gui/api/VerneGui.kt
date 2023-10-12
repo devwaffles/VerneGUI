@@ -1,12 +1,13 @@
 package dev.butter.gui.api
 
 import com.google.inject.Injector
-import dev.butter.gui.api.base.BaseGUI
+import dev.butter.gui.api.annotation.*
+import dev.butter.gui.api.base.BaseGui
 import dev.butter.gui.api.type.AnyClass
-import dev.butter.gui.api.type.DependencyInit
-import dev.butter.gui.api.type.GUIClass
-import dev.butter.gui.api.type.PlayerDependencyInit
-import dev.butter.gui.internal.InternalVerneGUI
+import dev.butter.gui.api.type.DynamicInit
+import dev.butter.gui.api.type.GuiClass
+import dev.butter.gui.api.type.StaticInit
+import dev.butter.gui.internal.InternalVerneGui
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -22,7 +23,7 @@ import kotlin.reflect.KClass
  * The VerneGUI interface is implemented by the InternalVerneGUI class,
  * and can be accessed through the VerneGUI.Companion.getInstance method.
  */
-interface VerneGUI {
+interface VerneGui {
 
     /**
      * The init method is used to initialize the VerneGUI API.
@@ -34,6 +35,8 @@ interface VerneGUI {
      * will use it to inject dependencies.
      *
      * @param plugin The plugin that is initializing the VerneGUI API.
+     * @param injector The Guice injector instance.
+     *
      * @return Unit
      */
     fun init(plugin: JavaPlugin, injector: Injector? = null)
@@ -46,16 +49,17 @@ interface VerneGUI {
      * GUITitle, GUISize, and TypeAlias annotations, and
      * have all dependencies registered.
      *
-     * @see dev.butter.gui.api.base.BaseGUI
-     * @see dev.butter.gui.api.annotation.GUITitle
-     * @see dev.butter.gui.api.annotation.GUISize
-     * @see dev.butter.gui.api.annotation.TypeAlias
-     * @see dev.butter.gui.api.annotation.ClickDelay
+     * @see BaseGui
+     * @see GuiTitle
+     * @see GuiSize
+     * @see TypeAlias
+     * @see ClickDelay
      *
      * @param guis The GUI kotlin classes to register.
+     *
      * @return Unit
      */
-    fun register(vararg guis: GUIClass)
+    fun register(vararg guis: GuiClass)
 
     /**
      * The registerDependency method is used to register
@@ -63,12 +67,13 @@ interface VerneGUI {
      * want to register with their associated kotlin class
      * ensuring that they all have a no args constructor.
      *
-     * @see dev.butter.gui.api.annotation.Dependency
+     * @see Dependency
      *
      * @param dependencies The dependency kotlin classes to register.
+     *
      * @return Unit
      */
-    fun registerDependency(vararg dependencies: AnyClass)
+    fun registerStatic(vararg dependencies: AnyClass)
 
     /**
      * The registerDependency method is used to register
@@ -77,15 +82,16 @@ interface VerneGUI {
      * kotlin class along with the init function that will be
      * used to construct the dependency instances.
      *
-     * @see dev.butter.gui.api.annotation.Dependency
+     * @see Dependency
      *
      * @param dependency The dependency kotlin class to register.
-     * @param init The init function that will be used to construct the dependency instances.
+     * @param init The init function that will be used to construct the static instance.
+     *
      * @return Unit
      */
-    fun <D : KClass<T>, T : Any> registerDependency(
+    fun <D : KClass<T>, T : Any> registerStatic(
         dependency: D,
-        init: DependencyInit<T>,
+        init: StaticInit<T>,
     )
 
     /**
@@ -95,15 +101,16 @@ interface VerneGUI {
      * kotlin class along with the init function that will be
      * used to construct the dependency instances.
      *
-     * @see dev.butter.gui.api.annotation.Dependency
+     * @see Dependency
      *
      * @param dependency The dependency kotlin class to register.
-     * @param init The init function that will be used to construct the dependency instances.
+     * @param init The init function that will be used to construct the dynamic instance.
+     *
      * @return Unit
      */
-    fun <D : KClass<T>, T : Any> registerPlayerDependency(
+    fun <D : KClass<T>, T : Any> registerDynamic(
         dependency: D,
-        init: PlayerDependencyInit<T>,
+        init: DynamicInit<T>,
     )
 
     /**
@@ -114,13 +121,14 @@ interface VerneGUI {
      * as a pair that will be used to construct the dependency
      * instances.
      *
-     * @see dev.butter.gui.api.annotation.Dependency
+     * @see Dependency
      *
-     * @param dependencyPair The dependency kotlin class and init function pair to register.
+     * @param dependencyPair The dependency kotlin class and static init function pair to register.
+     *
      * @return Unit
      */
-    fun <D : KClass<T>, T : Any> registerDependency(
-        vararg dependencyPair: Pair<D, DependencyInit<T>>,
+    fun <D : KClass<T>, T : Any> registerStatic(
+        vararg dependencyPair: Pair<D, StaticInit<T>>,
     )
 
     /**
@@ -131,13 +139,14 @@ interface VerneGUI {
      * as a pair that will be used to construct the player dependency
      * instances.
      *
-     * @see dev.butter.gui.api.annotation.Dependency
+     * @see Dependency
      *
-     * @param dependencyPair The dependency kotlin class and init function pair to register.
+     * @param dependencyPair The dependency kotlin class and dynamic init function pair to register.
+     *
      * @return Unit
      */
-    fun <D : KClass<T>, T : Any> registerPlayerDependency(
-        vararg dependencyPair: Pair<D, PlayerDependencyInit<T>>,
+    fun <D : KClass<T>, T : Any> registerDynamic(
+        vararg dependencyPair: Pair<D, DynamicInit<T>>,
     )
 
     /**
@@ -146,41 +155,45 @@ interface VerneGUI {
      * should only have one instance that is shared between
      * dependency injections.
      *
-     * @see dev.butter.gui.api.annotation.Dependency
+     * @see Dependency
      *
-     * @param dependency The dependency kotlin class to register.
+     * @param dependency The dependency kotlin class to register as a singleton.
+     *
      * @return Unit
      */
     fun registerSingleton(dependency: AnyClass)
 
     /**
      * The getMapping method is used to retrieve a mapping
-     * of all current online players to their respective GUI
+     * of all registered players to their respective GUI
      * instances based on the GUI kotlin class that is passed in.
      *
      * @param gui The GUI kotlin class to retrieve the mapping for.
-     * @return A mapping of all current online players to their respective GUI instances.
+     *
+     * @return A mapping of all registered players to their respective GUI instances.
      */
-    fun <G : BaseGUI> getMapping(gui: KClass<G>): Map<UUID, G>
+    fun <G : BaseGui> getMapping(gui: KClass<G>): Map<UUID, G>
 
     /**
-     * The getStatic method is used to retrieve the static
+     * This get method is used to retrieve the static
      * instance of the GUI kotlin class that is passed in.
      *
      * @param gui The GUI kotlin class to retrieve the static instance for.
+     *
      * @return The GUI kotlin class.
      */
-    fun <G : BaseGUI> getStatic(gui: KClass<G>): G
+    operator fun <G : BaseGui> get(gui: KClass<G>): G
 
     /**
-     * The getGuis method is used to retrieve a set of all
+     * This get method is used to retrieve a set of all
      * registered dynamic GUI instances that belongs to the
      * player that is passed in.
      *
      * @param player The player to retrieve the dynamic GUI instances for.
+     *
      * @return A set of all registered dynamic GUI instances that belongs to the player.
      */
-    fun getGuis(player: Player): Set<BaseGUI>
+    operator fun get(player: Player): Set<BaseGui>
 
     /**
      * The get method is used to retrieve the dynamic GUI instance
@@ -190,7 +203,7 @@ interface VerneGUI {
      * @param player The player to retrieve the dynamic GUI instance for.
      * @return The dynamic GUI instance that belongs to the player.
      */
-    operator fun <G : BaseGUI> get(
+    operator fun <G : BaseGui> get(
         gui: KClass<G>,
         player: Player,
     ): G
@@ -198,10 +211,10 @@ interface VerneGUI {
     companion object {
         /**
          * The get method is used to retrieve the VerneGUI
-         * instance that is implemented by the InternalVerneGUI class.
+         * instance that is implemented by the InternalVerneGUI object.
          *
          * @return The VerneGUI instance.
          */
-        fun get(): VerneGUI = InternalVerneGUI
+        fun get(): VerneGui = InternalVerneGui
     }
 }

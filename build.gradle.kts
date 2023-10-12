@@ -1,13 +1,13 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.10"
     id("java")
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("maven-publish")
 }
 
 group = "com.github.devwaffles"
 description = "VerneGUI"
-version = "1.1.1-beta"
+version = "1.2.0-beta"
 
 kotlin {
     jvmToolchain(8)

@@ -2,8 +2,10 @@ package dev.butter.gui.api.item.types
 
 import org.bukkit.inventory.ItemStack
 
-sealed interface Animated {
+/**
+ * Represents an item type that cycles through a list of items.
+ */
+internal sealed interface Animated {
     val tickSpeed: Long
     val cycleItems: List<ItemStack>
-    val startingItem: ItemStack
 }

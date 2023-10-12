@@ -1,19 +1,15 @@
 package dev.butter.gui.api.annotation
 
+import dev.butter.gui.api.base.BaseGui
+
 /**
- * This annotation is used to specify the delay
- * between each click on a clickable item or
- * animated clickable item.
+ * This annotation is used to specify the delay between clicks on items in a [BaseGui].
+ * Any clicks that occur within the delay will be ignored.
+ * By default, the delay is 1 gametick (20ms).
+ * The maximum delay that can be specified is 200 gameticks (10 seconds).
  *
- * By default, the delay is 1 gametick, with the
- * maximum delay being 100 gameticks. If a longer
- * delay is desired, implement a mechanism within
- * the createContents method of the GUI to handle
- * the delay.
- *
- * @see dev.butter.gui.api.base.BaseGUI
- * @see dev.butter.gui.api.base.BaseGUI.createContents
+ * @param delay The delay between clicks in gameticks. (20 gameticks = 1 second)
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class ClickDelay(val delay: Long)
+annotation class ClickDelay(val delay: Long = 1L)

@@ -1,6 +1,6 @@
 package dev.butter.gui.internal.listener
 
-import dev.butter.gui.internal.InternalGUIHandler.playerGuiInstances
+import dev.butter.gui.internal.InternalGuiHandler.dynamicGuiInstances
 import dev.butter.gui.internal.registerPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority.HIGHEST
@@ -13,7 +13,7 @@ internal object PlayerLoginListener : Listener {
         val player = event.player
         val uuid = player.uniqueId
 
-        if (uuid in playerGuiInstances.keys) {
+        if (uuid in dynamicGuiInstances.keys) {
             return
         }
 

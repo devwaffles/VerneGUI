@@ -1,16 +1,18 @@
 package dev.butter.gui.api.annotation
 
-import dev.butter.gui.api.type.GUIType
+import dev.butter.gui.api.base.BaseGui
+import dev.butter.gui.api.type.GuiType
 
 /**
  * This annotation is used to specify the
- * GUI type. It is required for all GUIs.
- * This will determine whether the GUI is
- * shared between all players or not.
+ * GUI type. This annotation is required
+ * on all registered [BaseGui] classes.
+ * The type is used to determine whether the
+ * GUI is static or dynamic.
  *
- * @see dev.butter.gui.api.type.GUIType
- * @see dev.butter.gui.api.base.BaseGUI
+ * @see GuiType
+ * @see BaseGui
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class TypeAlias(val type: GUIType)
+annotation class TypeAlias(val type: GuiType)

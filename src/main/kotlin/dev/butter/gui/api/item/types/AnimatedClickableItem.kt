@@ -2,10 +2,12 @@ package dev.butter.gui.api.item.types
 
 import org.bukkit.inventory.ItemStack
 
-data class AnimatedClickableItem
-internal constructor(
+/**
+ * An [Animated] [Clickable] [GuiItem].
+ */
+internal data class AnimatedClickableItem(
     override val tickSpeed: Long,
     override val cycleItems: List<ItemStack>,
     override val action: InventoryAction,
-    override val startingItem: ItemStack = cycleItems.first(),
-) : GUIItem(startingItem), Clickable, Animated
+    override var stack: ItemStack,
+) : GuiItem(stack), Animated, Clickable
