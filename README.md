@@ -13,4 +13,4 @@ default implementations for the most common GUI elements.
 - Custom item builder.
 - Type-safe event handling.
 - Clickable items.
-
+- Pagination
