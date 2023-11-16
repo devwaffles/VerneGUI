@@ -45,7 +45,7 @@ interface VerneGui {
      * The register method is used to register GUIs.
      * Pass in the GUI class that you want to register
      * with their associated kotlin class ensuring that
-     * they extend the VerneBaseGUI class, have the
+     * they extend the BaseGui class, have the
      * GUITitle, GUISize, and TypeAlias annotations, and
      * have all dependencies registered.
      *
@@ -60,6 +60,26 @@ interface VerneGui {
      * @return Unit
      */
     fun register(vararg guis: GuiClass)
+
+    /**
+     * The register method is used to register GUIs.
+     * Pass in the GUI class that you want to register
+     * with their associated kotlin class ensuring that
+     * they extend the BaseGui class, have the
+     * GUITitle, GUISize, and TypeAlias annotations, and
+     * have all dependencies registered.
+     *
+     * @see BaseGui
+     * @see GuiTitle
+     * @see GuiSize
+     * @see TypeAlias
+     * @see ClickDelay
+     *
+     * @param guis The GUI kotlin classes to register.
+     *
+     * @return Unit
+     */
+    fun register(guis: Collection<GuiClass>)
 
     /**
      * The registerDependency method is used to register
@@ -111,42 +131,6 @@ interface VerneGui {
     fun <D : KClass<T>, T : Any> registerDynamic(
         dependency: D,
         init: DynamicInit<T>,
-    )
-
-    /**
-     * The registerDependency method is used to register
-     * multiple dependencies that either have a custom init
-     * function or do not have no args constructors. Pass in
-     * the dependency kotlin class along with the init function
-     * as a pair that will be used to construct the dependency
-     * instances.
-     *
-     * @see Dependency
-     *
-     * @param dependencyPair The dependency kotlin class and static init function pair to register.
-     *
-     * @return Unit
-     */
-    fun <D : KClass<T>, T : Any> registerStatic(
-        vararg dependencyPair: Pair<D, StaticInit<T>>,
-    )
-
-    /**
-     * The registerDependency method is used to register
-     * multiple player dependencies that either have a custom init
-     * function or do not have no args constructors. Pass in
-     * the dependency kotlin class along with the init function
-     * as a pair that will be used to construct the player dependency
-     * instances.
-     *
-     * @see Dependency
-     *
-     * @param dependencyPair The dependency kotlin class and dynamic init function pair to register.
-     *
-     * @return Unit
-     */
-    fun <D : KClass<T>, T : Any> registerDynamic(
-        vararg dependencyPair: Pair<D, DynamicInit<T>>,
     )
 
     /**

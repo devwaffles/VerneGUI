@@ -1,6 +1,7 @@
 package dev.butter.gui.api.annotation
 
 import dev.butter.gui.api.base.BaseGui
+import dev.butter.gui.api.type.GameTicks
 
 /**
  * This annotation is used to specify the delay between clicks on items in a [BaseGui].
@@ -12,4 +13,4 @@ import dev.butter.gui.api.base.BaseGui
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
-annotation class ClickDelay(val delay: Long = 1L)
+annotation class ClickDelay(val delay: GameTicks = 1L)

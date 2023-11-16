@@ -20,6 +20,9 @@ internal object InternalVerneGui : VerneGui {
     override fun register(vararg guis: GuiClass) =
         guis.forEach(InternalGuiHandler::register)
 
+    override fun register(guis: Collection<GuiClass>) =
+        guis.forEach(InternalGuiHandler::register)
+
     override fun registerStatic(vararg dependencies: AnyClass) =
         dependencies.forEach(InternalGuiHandler::registerDependency)
 
@@ -32,18 +35,6 @@ internal object InternalVerneGui : VerneGui {
         dependency: D,
         init: DynamicInit<T>,
     ) = InternalGuiHandler.registerDynamic(dependency, init)
-
-    override fun <D : KClass<T>, T : Any> registerStatic(
-        vararg dependencyPair: Pair<D, StaticInit<T>>
-    ) = dependencyPair.forEach { (dependency, pair) ->
-        registerStatic(dependency, pair)
-    }
-
-    override fun <D : KClass<T>, T : Any> registerDynamic(
-        vararg dependencyPair: Pair<D, DynamicInit<T>>
-    ) = dependencyPair.forEach { (dependency, pair) ->
-        registerDynamic(dependency, pair)
-    }
 
     override fun registerSingleton(dependency: AnyClass) =
         InternalGuiHandler.registerSingleton(dependency)

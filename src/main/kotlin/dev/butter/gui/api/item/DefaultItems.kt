@@ -3,6 +3,7 @@ package dev.butter.gui.api.item
 import dev.butter.gui.api.item.DefaultItems.Companion.conditionPane
 import dev.butter.gui.api.item.builder.item
 import org.bukkit.Material
+import org.bukkit.Material.STAINED_GLASS_PANE
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -16,7 +17,7 @@ import org.bukkit.inventory.ItemStack
 enum class DefaultItems(val item: ItemStack) {
     FILLER_PANE(
         item {
-            type = Material.STAINED_GLASS_PANE
+            type = STAINED_GLASS_PANE
             durability = 7
             displayName = " "
         }

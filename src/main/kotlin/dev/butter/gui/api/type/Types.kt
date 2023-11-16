@@ -20,3 +20,5 @@ typealias StaticInit<T> = (JavaPlugin) -> T
  * This is a type alias used for initializing dynamic dependencies.
  */
 typealias DynamicInit<T> = (Player, JavaPlugin) -> T
+
+typealias GameTicks = Long
