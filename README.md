@@ -14,3 +14,33 @@ default implementations for the most common GUI elements.
 - Type-safe event handling.
 - Clickable items.
 - Pagination
+
+## Installation
+
+Gradle (Kotlin DSL)
+
+```kotlin
+// JitPack repository
+maven("https://jitpack.io")
+```
+```kotlin
+// Dependency
+implementation("com.github.devwaffles:VerneGUI:1.2.1-beta")
+```
+
+Maven
+```xml
+<!-- JitPack repository -->
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+```
+```xml
+<!-- Dependency -->
+<dependency>
+    <groupId>com.github.devwaffles</groupId>
+    <artifactId>VerneGUI</artifactId>
+    <version>1.2.1-beta</version>
+</dependency>
+```

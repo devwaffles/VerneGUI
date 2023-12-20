@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version "1.9.21"
     id("java")
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("maven-publish")
@@ -7,7 +7,7 @@ plugins {
 
 group = "com.github.devwaffles"
 description = "VerneGUI"
-version = "1.2.0-beta"
+version = "1.2.1-beta"
 
 kotlin {
     jvmToolchain(8)
@@ -27,8 +27,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.21")
     compileOnly("com.destroystokyo.paper:paper-api:1.9.4-R0.1-SNAPSHOT")
     implementation("com.google.inject:guice:4.1.0")
 }

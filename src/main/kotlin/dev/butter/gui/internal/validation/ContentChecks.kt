@@ -22,6 +22,9 @@ internal fun GuiContents.checkSlots(slot: Int) =
         "Invalid slot ($slot) for GUI: ${gui::class.simpleName} - must be within $slotRange."
     }
 
+internal fun GuiContents.checkSlots(slots: Collection<Int>) =
+    slots.forEach(::checkSlots)
+
 internal fun GuiContents.checkSlotRange(slots: IntRange) =
     require(slots.first >= slotRange.first && slots.last <= slotRange.last) {
         "Invalid slot range ($slots) for GUI: ${gui::class.simpleName} - must be within $slotRange."
@@ -31,6 +34,9 @@ internal fun GuiContents.checkRows(row: Int) =
     require(row in rowRange) {
         "Invalid row ($row) for GUI: ${gui::class.simpleName} - must be within $rowRange."
     }
+
+internal fun GuiContents.checkRows(rows: Collection<Int>) =
+    rows.forEach(::checkRows)
 
 internal fun GuiContents.checkRowRange(inputRange: IntRange) =
     require(inputRange.first >= rowRange.first && inputRange.last <= rowRange.last) {
@@ -42,8 +48,11 @@ internal fun GuiContents.checkColumns(column: Int) =
         "Invalid column ($column) for GUI: ${this.gui::class.simpleName} - must be within $DEFAULT_COLUMNS."
     }
 
+internal fun GuiContents.checkColumns(columns: Collection<Int>) =
+    columns.forEach(::checkColumns)
+
 internal fun GuiContents.checkColumnRange(inputRange: IntRange) =
-    require (inputRange.first >= DEFAULT_COLUMNS.first && inputRange.last <= DEFAULT_COLUMNS.last) {
+    require(inputRange.first >= DEFAULT_COLUMNS.first && inputRange.last <= DEFAULT_COLUMNS.last) {
         "Invalid column range ($inputRange) for GUI: ${gui::class.simpleName} - must be within $DEFAULT_COLUMNS."
     }
 

@@ -67,6 +67,27 @@ fun GuiContents.set(
 }
 
 /**
+ * Sets the collection of rows and column provided to the given item.
+ *
+ * @param rows The rows to set.
+ * @param column The column to set.
+ * @param item The item to set with.
+ */
+@NonPageSpecific
+fun GuiContents.set(
+    rows: Collection<Int>,
+    column: Int,
+    item: ItemStack
+) {
+    checkRows(rows)
+    checkColumns(column)
+
+    rows.forEach { row ->
+        set(row, column, item)
+    }
+}
+
+/**
  * Sets the row and range of columns provided to the given item.
  *
  * @param row The row to set.
@@ -81,6 +102,27 @@ fun GuiContents.set(
 ) {
     checkRows(row)
     checkColumnRange(columns)
+
+    columns.forEach { column ->
+        set(row, column, item)
+    }
+}
+
+/**
+ * Sets the row and collection of columns provided to the given item.
+ *
+ * @param row The row to set.
+ * @param columns The columns to set.
+ * @param item The item to set with.
+ */
+@NonPageSpecific
+fun GuiContents.set(
+    row: Int,
+    columns: Collection<Int>,
+    item: ItemStack,
+) {
+    checkRows(row)
+    checkColumns(columns)
 
     columns.forEach { column ->
         set(row, column, item)
@@ -111,6 +153,76 @@ fun GuiContents.set(
 }
 
 /**
+ * Sets the collection of rows and columns provided to the given item.
+ *
+ * @param rows The rows to set.
+ * @param columns The columns to set.
+ * @param item The item to set with.
+ */
+@NonPageSpecific
+fun GuiContents.set(
+    rows: Collection<Int>,
+    columns: Collection<Int>,
+    item: ItemStack,
+) {
+    checkRows(rows)
+    checkColumns(columns)
+
+    rows.forEach { row ->
+        columns.forEach { column ->
+            set(row, column, item)
+        }
+    }
+}
+
+
+/**
+ * Sets the collection of rows and range of columns provided to the given item.
+ *
+ * @param rows The rows to set.
+ * @param columns The columns to set.
+ * @param item The item to set with.
+ */
+@NonPageSpecific
+fun GuiContents.set(
+    rows: Collection<Int>,
+    columns: IntRange,
+    item: ItemStack,
+) {
+    checkRows(rows)
+    checkColumnRange(columns)
+
+    rows.forEach { row ->
+        columns.forEach { column ->
+            set(row, column, item)
+        }
+    }
+}
+
+/**
+ * Sets the range of rows and collection of columns provided to the given item.
+ *
+ * @param rows The rows to set.
+ * @param columns The columns to set.
+ * @param item The item to set with.
+ */
+@NonPageSpecific
+fun GuiContents.set(
+    rows: IntRange,
+    columns: Collection<Int>,
+    item: ItemStack,
+) {
+    checkRowRange(rows)
+    checkColumns(columns)
+
+    rows.forEach { row ->
+        columns.forEach { column ->
+            set(row, column, item)
+        }
+    }
+}
+
+/**
  * Sets the range of slots provided to the given item.
  *
  * @param slots The slots to set.
@@ -122,6 +234,24 @@ fun GuiContents.set(
     item: ItemStack,
 ) {
     checkSlotRange(slots)
+
+    slots.forEach { slot ->
+        set(slot, item)
+    }
+}
+
+/**
+ * Sets the collection of slots provided to the given item.
+ *
+ * @param slots The slots to set.
+ * @param item The item to set with.
+ */
+@NonPageSpecific
+fun GuiContents.set(
+    slots: Collection<Int>,
+    item: ItemStack,
+) {
+    checkSlots(slots)
 
     slots.forEach { slot ->
         set(slot, item)
