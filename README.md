@@ -25,7 +25,7 @@ maven("https://jitpack.io")
 ```
 ```kotlin
 // Dependency
-implementation("com.github.devwaffles:VerneGUI:1.2.1-beta")
+implementation("com.github.devwaffles:VerneGUI:1.2.2-beta")
 ```
 
 Maven
@@ -41,6 +41,6 @@ Maven
 <dependency>
     <groupId>com.github.devwaffles</groupId>
     <artifactId>VerneGUI</artifactId>
-    <version>1.2.1-beta</version>
+    <version>1.2.2-beta</version>
 </dependency>
 ```
