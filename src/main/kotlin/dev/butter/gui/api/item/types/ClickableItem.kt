@@ -7,5 +7,5 @@ import org.bukkit.inventory.ItemStack
  */
 internal data class ClickableItem(
     override var stack: ItemStack,
-    override val action: InventoryAction,
+    override val action: ClickAction = DefaultClickAction,
 ) : GuiItem(stack), Clickable

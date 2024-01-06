@@ -1,7 +1,7 @@
 package dev.butter.gui.api.functions
 
 import dev.butter.gui.api.base.GuiContents
-import dev.butter.gui.api.item.types.DefaultPageInventoryAction
+import dev.butter.gui.api.item.types.DefaultPageClickAction
 import dev.butter.gui.api.item.types.PageAction.REFRESH_PAGE
 import dev.butter.gui.api.item.types.PageItem
 import dev.butter.gui.internal.validation.*
@@ -21,7 +21,7 @@ fun GuiContents.refresh(
     checkSlots(slot)
     checkRefreshItem(slot)
 
-    this.contentItems += slot to PageItem(item, REFRESH_PAGE, DefaultPageInventoryAction)
+    this.contentItems += slot to PageItem(item, REFRESH_PAGE, action = DefaultPageClickAction)
 }
 
 /**

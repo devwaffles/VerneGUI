@@ -8,5 +8,6 @@ import org.bukkit.inventory.ItemStack
 internal data class PageItem(
     override var stack: ItemStack,
     val pageAction: PageAction,
-    val action: PageInventoryAction = DefaultPageInventoryAction,
+    val filter: PageFilter = DefaultPageFilter,
+    val action: PageClickAction = DefaultPageClickAction,
 ) : GuiItem(stack)

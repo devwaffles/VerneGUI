@@ -8,13 +8,7 @@ import dev.butter.gui.api.type.GuiClass
 import dev.butter.gui.api.type.GuiType.DYNAMIC
 import dev.butter.gui.api.type.GuiType.STATIC
 import dev.butter.gui.api.type.StaticInit
-import dev.butter.gui.internal.InternalGuiHandler.dynamicGuiInstances
-import dev.butter.gui.internal.InternalGuiHandler.dynamicGuis
-import dev.butter.gui.internal.InternalGuiHandler.plugin
-import dev.butter.gui.internal.extensions.init
-import dev.butter.gui.internal.extensions.mapValues
-import dev.butter.gui.internal.extensions.noArgsConstructor
-import dev.butter.gui.internal.extensions.type
+import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.BaseGuiListener
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.update.AnimatedItemRunnable
@@ -130,7 +124,9 @@ internal object InternalGuiHandler {
         return staticGuiInstances.find(gui::isInstance) as G
     }
 
-    fun getGuis(player: Player) = dynamicGuiInstances[player.uniqueId]!!.toSet()
+    fun getGuis(player: Player) = dynamicGuiInstances[player.uniqueId]!!
+        .toSet()
+        .onEach(BaseGui::update)
 
     @Suppress("UNCHECKED_CAST")
     fun <G : BaseGui> get(
@@ -140,7 +136,9 @@ internal object InternalGuiHandler {
         validateRegistered(gui)
         validateNonStatic(gui)
 
-        return this.getGuis(player).find(gui::isInstance) as G
+        return this
+            .getGuis(player)
+            .find(gui::isInstance) as G
     }
 
     private fun sortGuiSet() = guis
@@ -160,11 +158,4 @@ internal object InternalGuiHandler {
 
     private fun initDynamicGuis() = plugin.server.onlinePlayers
         .forEach(Player::registerPlayer)
-}
-
-internal fun Player.registerPlayer() {
-    dynamicGuiInstances += this.uniqueId to dynamicGuis
-        .map(GuiClass::createInstance)
-        .onEach { gui -> gui.init(this, plugin) }
-        .toSet()
 }

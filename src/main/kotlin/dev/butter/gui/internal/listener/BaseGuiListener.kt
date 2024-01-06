@@ -62,8 +62,7 @@ internal object BaseGuiListener : Listener {
 
     @EventHandler
     fun on(event: InventoryCloseEvent) {
-        val inventory = event.inventory
-        val holder = inventory.holder
+        val holder = event.inventory.holder
 
         if (holder !is BaseGui) {
             return

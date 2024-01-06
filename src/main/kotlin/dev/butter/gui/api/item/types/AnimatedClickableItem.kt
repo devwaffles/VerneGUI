@@ -8,6 +8,6 @@ import org.bukkit.inventory.ItemStack
 internal data class AnimatedClickableItem(
     override val tickSpeed: Long,
     override val cycleItems: List<ItemStack>,
-    override val action: InventoryAction,
+    override val action: ClickAction,
     override var stack: ItemStack,
 ) : GuiItem(stack), Animated, Clickable

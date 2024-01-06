@@ -76,8 +76,8 @@ private fun Collection<BaseGui>.updateContents() = this
 
 private fun Animated.onTick() = currentTick % tickSpeed == 0L
 
-private fun GuiItem.cycleItem() {
-    val items = (this as Animated).cycleItems
+private fun <T : GuiItem> T.cycleItem() {
+    val items = (this as? Animated ?: return).cycleItems
     val currentItem = this.stack
     val index = items.indexOf(currentItem)
     val nextIndex = (index + 1) % items.size

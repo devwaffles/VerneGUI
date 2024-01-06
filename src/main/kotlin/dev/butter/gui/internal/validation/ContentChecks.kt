@@ -4,6 +4,7 @@ import dev.butter.gui.api.base.GuiContents
 import dev.butter.gui.api.item.types.GuiItem
 import dev.butter.gui.api.item.types.PageAction.*
 import dev.butter.gui.api.item.types.PageItem
+import dev.butter.gui.api.item.types.RegularItem
 import dev.butter.gui.api.type.GuiClass
 import dev.butter.gui.internal.InternalGuiHandler.guis
 import dev.butter.gui.internal.extensions.filterValuesIsInstance
@@ -147,5 +148,13 @@ internal fun GuiContents.checkRefreshItem(slot: Int) {
 
     require(slot == duplicateRefresh.key) {
         "Cannot have more than one refresh page item for GUI: ${gui::class.simpleName}."
+    }
+}
+
+internal fun GuiContents.checkPartitionOverlap(slot: Int) {
+    val duplicateItem = this.contentItems[slot] ?: return
+
+    require(duplicateItem is RegularItem) {
+        "Cannot partition slot ($slot) for GUI: ${gui::class.simpleName}. Already occupied with a non-regular item."
     }
 }

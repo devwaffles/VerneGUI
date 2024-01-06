@@ -7,6 +7,7 @@ import dev.butter.gui.api.extensions.pageItems
 import dev.butter.gui.api.item.builder.item
 import dev.butter.gui.api.item.types.GuiItem
 import dev.butter.gui.api.item.types.PageAction.NONE
+import dev.butter.gui.api.item.types.PageFilter
 import dev.butter.gui.api.item.types.PageItem
 import dev.butter.gui.internal.InternalGuiHandler.dynamicDependencies
 import dev.butter.gui.internal.InternalGuiHandler.injector
@@ -17,6 +18,7 @@ import dev.butter.gui.internal.validation.GuiConstants.MAX_PAGES
 import org.bukkit.ChatColor.BOLD
 import org.bukkit.ChatColor.translateAlternateColorCodes
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.math.ceil
 import kotlin.reflect.full.findAnnotation
@@ -61,14 +63,17 @@ internal fun BaseGui.injectPlayerDependencies(player: Player) = this::class.anno
         field.set(this, init(player, plugin))
     }
 
-internal fun BaseGui.update() {
+fun BaseGui.update() {
     this.createDefaultContents()
     this.createPageContents()
     this.contents.init()
 }
 
-internal fun BaseGui.createDefaultContents() =
+internal fun BaseGui.createDefaultContents() {
+    this.contents.contentItems.clear()
+
     this::class.defaultContentsMethod.call(this)
+}
 
 internal fun BaseGui.pageSlots() = this.contents.contentItems
     .filterValuesIsInstance<Int, GuiItem, PageItem>()
@@ -96,43 +101,79 @@ internal fun BaseGui.updatePageCount() {
     val pageItems = this.pageItems()
     val pageSlots = this.pageSlots()
 
-    if (pageItems.isEmpty() ||
-        pageSlots.isEmpty()
-    ) {
+    if (pageItems.isEmpty() || pageSlots.isEmpty()) {
         return
     }
 
-    val pageItemCount = pageItems.size
-    val pageSlotCount = pageSlots.size
-    val pageCount = ceil(pageItemCount.toFloat() / pageSlotCount).toInt()
+    val (filteredItems, filterSlotCount, filterPageCount, _) = this.getFilterData()
+    val highestPageFilter = filterPageCount
+        .maxByOrNull(Map.Entry<PageFilter, Int>::value) ?: return
+    val highestPageCount = highestPageFilter.value
+    val slotCount = filterSlotCount[highestPageFilter.key] ?: return
+    val itemCount = filteredItems[highestPageFilter.key]?.size ?: return
 
-    check(pageCount < MAX_PAGES) {
-        "GUI: ${this::class.simpleName} has too many pages, with a total of $pageItemCount page items and only $pageSlotCount page item slots creating $pageCount pages. Max pages is $MAX_PAGES."
+    check(highestPageCount < MAX_PAGES) {
+        "GUI: ${this::class.simpleName} has too many pages, with one slot filter containing $itemCount page items and only $slotCount page item slots creating $highestPageCount pages. Max pages is $MAX_PAGES."
     }
 
-    this.pages = 1..pageCount
+    this.pages = 1..highestPageCount
 
-    if (this.current > pageCount) {
-        this.current = pageCount
+    if (this.current > highestPageCount) {
+        this.current = highestPageCount
     }
 }
 
 internal fun BaseGui.fillPageItems() {
     val pageSlots = this.pageSlots()
-    val pageItems = this.pageItems()
 
     if (pageSlots.isEmpty()) {
         return
     }
 
-    val pageSlotCount = pageSlots.size
-    val mappedIndex: (Int) -> Int = { index ->
-        (this.current - 1) * pageSlotCount + index
-    }
+    val (filteredItems, filterSlotCount, filterPageCount, filterItemIndexCount) = this.getFilterData()
 
-    pageSlots.toIndexedMap()
-        .mapKeys(mappedIndex)
-        .forEach { (index, pageItem) ->
-            pageItem.stack = pageItems.getOrNull(index) ?: item()
+    pageSlots.values.forEach { pageItem ->
+        val filter = pageItem.filter
+        val filteredPageItems = filteredItems[filter] ?: return@forEach
+        val slotCount = filterSlotCount[filter] ?: return@forEach
+        val pageCount = filterPageCount[filter] ?: return@forEach
+        val index = filterItemIndexCount[filter] ?: return@forEach
+        val filteredIndex = (this.current.coerceAtMost(pageCount) - 1) * slotCount + index
+
+        filterItemIndexCount[filter] = index + 1
+
+        pageItem.stack = filteredPageItems.getOrNull(filteredIndex) ?: item()
+    }
+}
+
+internal fun BaseGui.getUniqueFilters() = this.pageSlots()
+    .values
+    .map(PageItem::filter)
+    .toSet()
+
+internal fun BaseGui.getFilterData():
+    Quad<
+        Map<PageFilter, List<ItemStack>>,
+        Map<PageFilter, Int>,
+        Map<PageFilter, Int>,
+        MutableMap<PageFilter, Int>
+    > {
+    val pageSlots = this.pageSlots()
+    val pageItems = this.pageItems()
+    val filters = this.getUniqueFilters()
+    val filteredItems = filters
+        .associateWith(pageItems::filter)
+    val filterSlotCount = filters
+        .associateWith { filter ->
+            pageSlots.count { it.value.filter == filter }
         }
+    val filterPageCount = filters
+        .associateWith { filter ->
+            ceil(filteredItems[filter]!!.size.toFloat() / filterSlotCount[filter]!!).toInt()
+        }
+    val filterItemIndexCount = filters
+        .associateWith { 0 }
+        .toMutableMap()
+
+    return quadOf(filteredItems, filterSlotCount, filterPageCount, filterItemIndexCount)
 }

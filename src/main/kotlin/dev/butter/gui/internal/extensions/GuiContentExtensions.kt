@@ -4,7 +4,7 @@ import dev.butter.gui.api.base.BaseGui
 import dev.butter.gui.api.base.GuiContents
 import dev.butter.gui.api.extensions.open
 import dev.butter.gui.api.item.types.Clickable
-import dev.butter.gui.api.item.types.DefaultPageInventoryAction
+import dev.butter.gui.api.item.types.DefaultPageClickAction
 import dev.butter.gui.api.item.types.LinkingItem
 import dev.butter.gui.api.item.types.PageAction.*
 import dev.butter.gui.api.item.types.PageItem
@@ -79,7 +79,7 @@ private fun PageItem.handle(
             return gui.update()
 
         NONE -> {
-            if (action == DefaultPageInventoryAction) {
+            if (action == DefaultPageClickAction) {
                 return
             }
 

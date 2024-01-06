@@ -2,7 +2,7 @@ package dev.butter.gui.api.functions
 
 import dev.butter.gui.api.base.GuiContents
 import dev.butter.gui.api.item.types.ClickableItem
-import dev.butter.gui.api.item.types.InventoryAction
+import dev.butter.gui.api.item.types.ClickAction
 import dev.butter.gui.internal.validation.*
 import org.bukkit.inventory.ItemStack
 
@@ -18,7 +18,7 @@ import org.bukkit.inventory.ItemStack
 fun GuiContents.set(
     slot: Int,
     item: ItemStack,
-    action: InventoryAction,
+    action: ClickAction,
 ) {
     checkSlots(slot)
 
@@ -39,7 +39,7 @@ fun GuiContents.set(
     row: Int,
     column: Int,
     item: ItemStack,
-    action: InventoryAction,
+    action: ClickAction,
 ) {
     checkRows(row)
     checkColumns(column)
@@ -61,7 +61,7 @@ fun GuiContents.set(
     rows: IntRange,
     column: Int,
     item: ItemStack,
-    action: InventoryAction,
+    action: ClickAction,
 ) {
     checkRowRange(rows)
     checkColumns(column)
@@ -85,7 +85,7 @@ fun GuiContents.set(
     row: Int,
     columns: IntRange,
     item: ItemStack,
-    action: InventoryAction,
+    action: ClickAction,
 ) {
     checkRows(row)
     checkColumnRange(columns)
@@ -109,7 +109,7 @@ fun GuiContents.set(
     rows: IntRange,
     columns: IntRange,
     item: ItemStack,
-    action: InventoryAction,
+    action: ClickAction,
 ) {
     checkRowRange(rows)
     checkColumnRange(columns)
@@ -133,7 +133,7 @@ fun GuiContents.set(
 fun GuiContents.set(
     slots: IntRange,
     item: ItemStack,
-    action: InventoryAction,
+    action: ClickAction,
 ) {
     checkSlotRange(slots)
 
