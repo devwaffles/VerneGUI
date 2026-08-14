@@ -3,6 +3,7 @@ package dev.butter.gui.internal.listener
 import dev.butter.gui.api.base.BaseGui
 import dev.butter.gui.internal.extensions.clickDelay
 import dev.butter.gui.internal.extensions.handle
+import dev.butter.gui.internal.extensions.inject
 import dev.butter.gui.internal.extensions.update
 import dev.butter.gui.internal.update.AnimatedItemRunnable.currentTick
 import org.bukkit.entity.Player
@@ -55,8 +56,10 @@ internal object BaseGuiListener : Listener {
     @EventHandler(ignoreCancelled = true)
     fun on(event: InventoryOpenEvent) {
         val inventory = event.inventory
+        val player = event.player as? Player ?: return
         val gui = inventory.holder as? BaseGui ?: return
 
+        gui.inject(player)
         gui.update()
     }
 

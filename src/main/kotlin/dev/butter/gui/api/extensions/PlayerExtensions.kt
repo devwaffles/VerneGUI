@@ -7,4 +7,4 @@ import org.bukkit.inventory.InventoryView
 /**
  * Opens the specified GUI for the player.
  */
-infix fun <G : BaseGui> Player.open(gui: G): InventoryView = this.openInventory(gui.inventory)
+infix fun <G : BaseGui> Player.open(gui: G): InventoryView = this.openInventory(gui.inventory)!!

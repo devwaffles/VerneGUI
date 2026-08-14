@@ -7,7 +7,8 @@ import dev.butter.gui.api.item.types.GuiItem
 import dev.butter.gui.api.type.GuiClass
 import dev.butter.gui.internal.InternalGuiHandler.dynamicGuiInstances
 import dev.butter.gui.internal.InternalGuiHandler.staticGuiInstances
-import dev.butter.gui.internal.extensions.*
+import dev.butter.gui.internal.extensions.anyInstanceOf
+import dev.butter.gui.internal.extensions.init
 import dev.butter.gui.internal.update.AnimatedItemRunnable.animatedItemGuis
 import dev.butter.gui.internal.update.AnimatedItemRunnable.currentTick
 import org.bukkit.scheduler.BukkitRunnable
@@ -21,7 +22,6 @@ internal object AnimatedItemRunnable : BukkitRunnable() {
             .filter(BaseGui::hasAnimatedItems)
             .map { it::class }
             .toSet()
-
         val filteredDynamicGuis = dynamicGuiInstances
             .values
             .flatten()
@@ -52,7 +52,7 @@ internal object AnimatedItemRunnable : BukkitRunnable() {
     }
 }
 
-private fun BaseGui.hasAnimatedItems() = this
+internal fun BaseGui.hasAnimatedItems() = this
     .contents
     .contentItems
     .values

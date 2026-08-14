@@ -29,6 +29,16 @@ internal fun BaseGui.init(
 ) {
     this.plugin = plugin
 
+    inject(owner)
+
+    val title = this::class.title
+    this.contents = GuiContents(this)
+    this.gui = plugin.server.createInventory(this, this::class.rows * 9, "${title.color}${if (title.bold) BOLD else ""}${translateAlternateColorCodes('&', title.value)}")
+
+    this.update()
+}
+
+internal fun BaseGui.inject(owner: Player?) {
     if (toInjectGuice()) {
         injector.injectMembers(this)
     }
@@ -39,12 +49,6 @@ internal fun BaseGui.init(
         this.owner = owner
         injectPlayerDependencies(owner)
     }
-
-    val title = this::class.title
-    this.contents = GuiContents(this)
-    this.gui = plugin.server.createInventory(this, this::class.rows * 9, "${title.color}${if (title.bold) BOLD else ""}${translateAlternateColorCodes('&', title.value)}")
-
-    this.update()
 }
 
 internal fun BaseGui.injectNonPlayerDependencies() = this::class.annotatedDependencyFields
@@ -71,7 +75,6 @@ fun BaseGui.update() {
 
 internal fun BaseGui.createDefaultContents() {
     this.contents.contentItems.clear()
-
     this::class.defaultContentsMethod.call(this)
 }
 

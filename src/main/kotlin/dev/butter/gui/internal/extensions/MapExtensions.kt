@@ -7,9 +7,7 @@ internal fun <K, V> Map<K, V>.filterValues(predicate: (V) -> Boolean): Map<K, V>
     filter { (_, value) -> predicate(value) }
 
 internal inline fun <K, V, reified T : V> Map<K, V>.filterValuesIsInstance(): Map<K, T> =
-    mapValuesNotNull { value ->
-        if (value is T) value else null
-    }
+    mapValuesNotNull { value -> value as? T }
 
 internal fun <K, V, T> Map<K, V>.mapKeys(transform: (K) -> T): Map<T, V> =
     map { entry -> transform(entry.key) to entry.value }.toMap()

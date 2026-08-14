@@ -2,7 +2,6 @@ package dev.butter.gui.api.item
 
 import dev.butter.gui.api.item.DefaultItems.Companion.conditionPane
 import dev.butter.gui.api.item.builder.item
-import org.bukkit.Material
 import org.bukkit.Material.STAINED_GLASS_PANE
 import org.bukkit.inventory.ItemStack
 

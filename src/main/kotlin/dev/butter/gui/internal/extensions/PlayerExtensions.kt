@@ -7,9 +7,13 @@ import dev.butter.gui.internal.InternalGuiHandler.plugin
 import org.bukkit.entity.Player
 import kotlin.reflect.full.createInstance
 
-internal fun Player.registerPlayer() {
+internal fun Player.register() {
     dynamicGuiInstances += this.uniqueId to dynamicGuis
         .map(GuiClass::createInstance)
         .onEach { gui -> gui.init(this, plugin) }
         .toSet()
+}
+
+internal fun Player.unregister() {
+    dynamicGuiInstances -= this.uniqueId
 }

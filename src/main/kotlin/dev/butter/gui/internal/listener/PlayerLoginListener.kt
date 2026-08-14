@@ -1,22 +1,19 @@
 package dev.butter.gui.internal.listener
 
-import dev.butter.gui.internal.InternalGuiHandler.dynamicGuiInstances
-import dev.butter.gui.internal.extensions.registerPlayer
+import dev.butter.gui.internal.extensions.register
+import dev.butter.gui.internal.extensions.unregister
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority.HIGHEST
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
 internal object PlayerLoginListener : Listener {
     @EventHandler(priority = HIGHEST)
-    fun on(event: PlayerJoinEvent) {
-        val player = event.player
-        val uuid = player.uniqueId
+    fun on(event: PlayerJoinEvent) =
+        event.player.register()
 
-        if (uuid in dynamicGuiInstances.keys) {
-            return
-        }
-
-        player.registerPlayer()
-    }
+    @EventHandler(priority = HIGHEST)
+    fun on(event: PlayerQuitEvent) =
+        event.player.unregister()
 }

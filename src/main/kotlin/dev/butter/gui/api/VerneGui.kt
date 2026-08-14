@@ -3,10 +3,7 @@ package dev.butter.gui.api
 import com.google.inject.Injector
 import dev.butter.gui.api.annotation.*
 import dev.butter.gui.api.base.BaseGui
-import dev.butter.gui.api.type.AnyClass
-import dev.butter.gui.api.type.DynamicInit
-import dev.butter.gui.api.type.GuiClass
-import dev.butter.gui.api.type.StaticInit
+import dev.butter.gui.api.type.*
 import dev.butter.gui.internal.InternalVerneGui
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -131,6 +128,25 @@ interface VerneGui {
     fun <D : KClass<T>, T : Any> registerDynamic(
         dependency: D,
         init: DynamicInit<T>,
+    )
+
+    /**
+     * The registerDependency method is used to register
+     * dependencies that either have a custom init function or
+     * do not have no any args constructors. Pass in the dependency
+     * kotlin class along with the init function that will be
+     * used to construct the dependency instances.
+     *
+     * @see Dependency
+     *
+     * @param dependency The dependency kotlin class to register.
+     * @param init The init function that will be used to construct the dynamic instance.
+     *
+     * @return Unit
+     */
+    fun <D : KClass<T>, T : Any> registerDynamic(
+        dependency: D,
+        init: PlayerInit<T>,
     )
 
     /**

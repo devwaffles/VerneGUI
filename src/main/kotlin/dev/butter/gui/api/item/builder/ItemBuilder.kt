@@ -54,14 +54,28 @@ data class ItemBuilder(var item: ItemStack = ItemStack(AIR)) {
 
     fun copyItem(itemToCopy: ItemStack) {
         this.item = itemToCopy.clone()
+
+        if (type == AIR) {
+            return
+        }
+
+        this.enchants += itemToCopy.enchantments
+            .mapTo(mutableListOf()) { (enc, int) -> EnchantContainer(enc, int) }
+        this.loreBuilder += itemToCopy.itemMeta.lore ?: mutableListOf()
     }
 
     fun build() = item.apply {
+        if (type == AIR) {
+            return@apply
+        }
+
         for (enchant in enchants) {
             addUnsafeEnchantment(enchant.enchant, enchant.level)
         }
 
-        this@ItemBuilder.lore = loreBuilder
+        this@apply.itemMeta = this@apply.itemMeta.apply {
+            lore = loreBuilder
+        }
     }
 }
 

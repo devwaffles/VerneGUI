@@ -1,13 +1,13 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "2.2.20"
     id("java")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.3.1"
     id("maven-publish")
 }
 
 group = "com.github.devwaffles"
 description = "VerneGUI"
-version = "1.2.1-beta"
+version = "1.2.3-beta"
 
 kotlin {
     jvmToolchain(8)
@@ -23,13 +23,17 @@ sourceSets {
 
 repositories {
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") {
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
 }
 
 dependencies {
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.21")
-    compileOnly("com.destroystokyo.paper:paper-api:1.9.4-R0.1-SNAPSHOT")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:2.2.20")
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     implementation("com.google.inject:guice:4.1.0")
 }
 

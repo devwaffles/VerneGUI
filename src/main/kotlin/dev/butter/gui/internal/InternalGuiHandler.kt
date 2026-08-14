@@ -2,12 +2,9 @@ package dev.butter.gui.internal
 
 import com.google.inject.Injector
 import dev.butter.gui.api.base.BaseGui
-import dev.butter.gui.api.type.AnyClass
-import dev.butter.gui.api.type.DynamicInit
-import dev.butter.gui.api.type.GuiClass
+import dev.butter.gui.api.type.*
 import dev.butter.gui.api.type.GuiType.DYNAMIC
 import dev.butter.gui.api.type.GuiType.STATIC
-import dev.butter.gui.api.type.StaticInit
 import dev.butter.gui.internal.extensions.*
 import dev.butter.gui.internal.listener.BaseGuiListener
 import dev.butter.gui.internal.listener.PlayerLoginListener
@@ -96,6 +93,16 @@ internal object InternalGuiHandler {
         dynamicDependencies += dependency to init
     }
 
+    fun <D : KClass<T>, T : Any> registerDynamic(
+        dependency: D,
+        init: PlayerInit<T>,
+    ) {
+        validateUninitialized()
+        validate(DependencyType.DYNAMIC, dependency, false)
+
+        dynamicDependencies += dependency to { player, _ -> init(player) }
+    }
+
     fun registerSingleton(dependency: AnyClass) {
         validateUninitialized()
         validate(SINGLETON, dependency, true)
@@ -126,7 +133,6 @@ internal object InternalGuiHandler {
 
     fun getGuis(player: Player) = dynamicGuiInstances[player.uniqueId]!!
         .toSet()
-        .onEach(BaseGui::update)
 
     @Suppress("UNCHECKED_CAST")
     fun <G : BaseGui> get(
@@ -157,5 +163,5 @@ internal object InternalGuiHandler {
         .forEach(staticGuiInstances::add)
 
     private fun initDynamicGuis() = plugin.server.onlinePlayers
-        .forEach(Player::registerPlayer)
+        .forEach(Player::register)
 }

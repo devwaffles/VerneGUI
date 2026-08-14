@@ -17,8 +17,9 @@ typealias AnyClass = KClass<out Any>
 typealias StaticInit<T> = (JavaPlugin) -> T
 
 /**
- * This is a type alias used for initializing dynamic dependencies.
+ * These are the type aliases used for initializing dynamic dependencies.
  */
 typealias DynamicInit<T> = (Player, JavaPlugin) -> T
+typealias PlayerInit<T> = (Player) -> T
 
 typealias GameTicks = Long

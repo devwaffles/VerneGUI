@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * Represents the contents of a [BaseGui].
  */
+@ConsistentCopyVisibility
 data class GuiContents
 internal constructor(
     val gui: BaseGui,

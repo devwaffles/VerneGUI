@@ -3,6 +3,7 @@ package dev.butter.gui.api.functions
 import dev.butter.gui.api.base.GuiContents
 import dev.butter.gui.api.item.types.AnimatedClickableItem
 import dev.butter.gui.api.item.types.ClickAction
+import dev.butter.gui.api.item.types.DefaultClickAction
 import dev.butter.gui.internal.validation.*
 import org.bukkit.inventory.ItemStack
 
@@ -21,7 +22,7 @@ fun GuiContents.set(
     slot: Int,
     tickSpeed: Long,
     cycleItems: Collection<ItemStack>,
-    action: ClickAction,
+    action: ClickAction = DefaultClickAction,
 ) {
     checkSlots(slot)
     checkDelays(tickSpeed)
@@ -53,7 +54,7 @@ fun GuiContents.set(
     column: Int,
     tickSpeed: Long,
     cycleItems: Collection<ItemStack>,
-    action: ClickAction,
+    action: ClickAction = DefaultClickAction,
 ) {
     checkRows(row)
     checkColumns(column)
@@ -80,7 +81,7 @@ fun GuiContents.set(
     column: Int,
     tickSpeed: Long,
     cycleItems: Collection<ItemStack>,
-    action: ClickAction,
+    action: ClickAction = DefaultClickAction,
 ) {
     checkRowRange(rows)
     checkColumns(column)
@@ -109,7 +110,7 @@ fun GuiContents.set(
     columns: IntRange,
     tickSpeed: Long,
     cycleItems: Collection<ItemStack>,
-    action: ClickAction,
+    action: ClickAction = DefaultClickAction,
 ) {
     checkRows(row)
     checkColumnRange(columns)
@@ -138,7 +139,7 @@ fun GuiContents.set(
     columns: IntRange,
     tickSpeed: Long,
     cycleItems: Collection<ItemStack>,
-    action: ClickAction,
+    action: ClickAction = DefaultClickAction,
 ) {
     checkRowRange(rows)
     checkColumnRange(columns)
