@@ -25,7 +25,7 @@ maven("https://jitpack.io")
 ```
 ```kotlin
 // Dependency
-implementation("com.github.devwaffles:VerneGUI:1.2.2-beta")
+implementation("com.github.devwaffles:VerneGUI:1.2.4-beta")
 ```
 
 Maven
