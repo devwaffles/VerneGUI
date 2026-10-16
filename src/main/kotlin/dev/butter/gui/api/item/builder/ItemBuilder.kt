@@ -69,8 +69,8 @@ data class ItemBuilder(var item: ItemStack = ItemStack(AIR)) {
             return@apply
         }
 
-        for (enchant in enchants) {
-            addUnsafeEnchantment(enchant.enchant, enchant.level)
+        for ((enchant, level) in enchants) {
+            addUnsafeEnchantment(enchant, level)
         }
 
         this@apply.itemMeta = this@apply.itemMeta.apply {

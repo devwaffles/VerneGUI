@@ -114,20 +114,22 @@ interface VerneGui {
     /**
      * The registerDependency method is used to register
      * dependencies that either have a custom init function or
-     * do not have no any args constructors. Pass in the dependency
-     * kotlin class along with the init function that will be
-     * used to construct the dependency instances.
+     * do not have no args constructors. Pass in the dependency
+     * kotlin class along with the associated GUI kotlin class and the init function that will be
+     * used to construct the static instance.
      *
      * @see Dependency
      *
      * @param dependency The dependency kotlin class to register.
-     * @param init The init function that will be used to construct the dynamic instance.
+     * @param gui The GUI kotlin class that the static instance provider will be associated with.
+     * @param init The init function that will be used to construct the static instance.
      *
      * @return Unit
      */
-    fun <D : KClass<T>, T : Any> registerDynamic(
+    fun <D : KClass<T>, T : Any, G : BaseGui> registerStatic(
         dependency: D,
-        init: DynamicInit<T>,
+        gui: KClass<G>,
+        init: StaticInit<T>,
     )
 
     /**
@@ -146,6 +148,67 @@ interface VerneGui {
      */
     fun <D : KClass<T>, T : Any> registerDynamic(
         dependency: D,
+        init: DynamicInit<T>,
+    )
+
+    /**
+     * The registerDynamic method is used to register
+     * dependencies that either have a custom init function or
+     * do not have no any args constructors. Pass in the dependency
+     * kotlin class along with the associated GUI kotlin class and the init function that will be
+     * used to construct the dynamic instance.
+     *
+     * @see Dependency
+     *
+     * @param dependency The dependency kotlin class to register.
+     * @param gui The GUI kotlin class that the dynamic instance provider will be associated with.
+     * @param init The init function that will be used to construct the dynamic instance.
+     *
+     * @return Unit
+     */
+    fun <D : KClass<T>, T : Any, G : BaseGui> registerDynamic(
+        dependency: D,
+        gui: KClass<G>,
+        init: DynamicInit<T>,
+    )
+
+    /**
+     * The registerDynamic method is used to register
+     * dependencies that either have a custom init function or
+     * do not have no any args constructors. Pass in the dependency
+     * kotlin class along with the init function that will be
+     * used to construct the dependency instances.
+     *
+     * @see Dependency
+     *
+     * @param dependency The dependency kotlin class to register.
+     * @param init The init function that will be used to construct the dynamic instance.
+     *
+     * @return Unit
+     */
+    fun <D : KClass<T>, T : Any> registerDynamic(
+        dependency: D,
+        init: PlayerInit<T>,
+    )
+
+    /**
+     * The registerDynamic method is used to register
+     * dependencies that either have a custom init function or
+     * do not have no any args constructors. Pass in the dependency
+     * kotlin class along with the associated GUI kotlin class and the init function that will be
+     * used to construct the dynamic instance.
+     *
+     * @see Dependency
+     *
+     * @param dependency The dependency kotlin class to register.
+     * @param gui The GUI kotlin class that the dynamic instance provider will be associated with.
+     * @param init The init function that will be used to construct the dynamic instance.
+     *
+     * @return Unit
+     */
+    fun <D : KClass<T>, T : Any, G : BaseGui> registerDynamic(
+        dependency: D,
+        gui: KClass<G>,
         init: PlayerInit<T>,
     )
 

@@ -7,7 +7,7 @@ plugins {
 
 group = "com.github.devwaffles"
 description = "VerneGUI"
-version = "1.2.3-beta"
+version = "1.2.4-beta"
 
 kotlin {
     jvmToolchain(8)
@@ -33,7 +33,9 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.2.20")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:2.2.20")
-    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT") {
+        exclude(group = "net.md-5", module = "bungeecord-chat")
+    }
     implementation("com.google.inject:guice:4.1.0")
 }
 

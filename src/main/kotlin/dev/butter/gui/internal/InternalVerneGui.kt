@@ -4,6 +4,7 @@ import com.google.inject.Injector
 import dev.butter.gui.api.VerneGui
 import dev.butter.gui.api.base.BaseGui
 import dev.butter.gui.api.type.*
+import dev.butter.gui.internal.InternalGuiHandler.DUMMY_GUI
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.reflect.KClass
@@ -26,17 +27,35 @@ internal object InternalVerneGui : VerneGui {
     override fun <D : KClass<T>, T : Any> registerStatic(
         dependency: D,
         init: StaticInit<T>,
-    ) = InternalGuiHandler.registerStatic(dependency, init)
+    ) = InternalGuiHandler.registerStatic(dependency, DUMMY_GUI::class, init)
+
+    override fun <D : KClass<T>, T : Any, G : BaseGui> registerStatic(
+        dependency: D,
+        gui: KClass<G>,
+        init: StaticInit<T>
+    ) = InternalGuiHandler.registerStatic(dependency, gui, init)
 
     override fun <D : KClass<T>, T : Any> registerDynamic(
         dependency: D,
         init: DynamicInit<T>,
-    ) = InternalGuiHandler.registerDynamic(dependency, init)
+    ) = InternalGuiHandler.registerDynamic(dependency, DUMMY_GUI::class, init)
+
+    override fun <D : KClass<T>, T : Any, G : BaseGui> registerDynamic(
+        dependency: D,
+        gui: KClass<G>,
+        init: DynamicInit<T>
+    ) = InternalGuiHandler.registerDynamic(dependency, gui, init)
 
     override fun <D : KClass<T>, T : Any> registerDynamic(
         dependency: D,
         init: PlayerInit<T>,
-    ) = InternalGuiHandler.registerDynamic(dependency, init)
+    ) = InternalGuiHandler.registerDynamic(dependency, DUMMY_GUI::class, init)
+
+    override fun <D : KClass<T>, T : Any, G : BaseGui> registerDynamic(
+        dependency: D,
+        gui: KClass<G>,
+        init: PlayerInit<T>
+    ) = InternalGuiHandler.registerDynamic(dependency, gui, init)
 
     override fun registerSingleton(dependency: AnyClass) =
         InternalGuiHandler.registerSingleton(dependency)

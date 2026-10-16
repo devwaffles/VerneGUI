@@ -9,6 +9,7 @@ import dev.butter.gui.api.item.types.GuiItem
 import dev.butter.gui.api.item.types.PageAction.NONE
 import dev.butter.gui.api.item.types.PageFilter
 import dev.butter.gui.api.item.types.PageItem
+import dev.butter.gui.internal.InternalGuiHandler.DUMMY_GUI
 import dev.butter.gui.internal.InternalGuiHandler.dynamicDependencies
 import dev.butter.gui.internal.InternalGuiHandler.injector
 import dev.butter.gui.internal.InternalGuiHandler.singletons
@@ -51,21 +52,41 @@ internal fun BaseGui.inject(owner: Player?) {
     }
 }
 
-internal fun BaseGui.injectNonPlayerDependencies() = this::class.annotatedDependencyFields
-    .filterValues((staticDependencies + singletons).keys::contains)
-    .mapValues { dep -> (staticDependencies + singletons)[dep]!! }
-    .forEach { (field, init) ->
-        field.isAccessible = true
-        field.set(this, init(plugin))
-    }
+internal fun BaseGui.injectNonPlayerDependencies() {
+    val fieldsToInject = this::class.annotatedDependencyFields
 
-internal fun BaseGui.injectPlayerDependencies(player: Player) = this::class.annotatedDependencyFields
-    .filterValues(dynamicDependencies.keys::contains)
-    .mapValues { dep -> dynamicDependencies[dep]!! }
-    .forEach { (field, init) ->
-        field.isAccessible = true
-        field.set(this, init(player, plugin))
+    for ((field, type) in fieldsToInject) {
+        if (type in singletons.keys) {
+            val init = singletons[type]!!
+
+            field.isAccessible = true
+
+            return field.set(this, init(plugin))
+        }
+
+        if (type in staticDependencies.keys) {
+            val guiInitMap = staticDependencies[type]!!
+            val init = guiInitMap[this::class] ?: guiInitMap[DUMMY_GUI::class]!!
+
+            field.isAccessible = true
+            field.set(this, init(plugin))
+        }
     }
+}
+
+internal fun BaseGui.injectPlayerDependencies(player: Player) {
+    val fieldsToInject = this::class.annotatedDependencyFields
+
+    for ((field, type) in fieldsToInject) {
+        if (type in dynamicDependencies.keys) {
+            val guiInitMap = dynamicDependencies[type]!!
+            val init = guiInitMap[this::class] ?: guiInitMap[DUMMY_GUI::class]!!
+
+            field.isAccessible = true
+            field.set(this, init(player, plugin))
+        }
+    }
+}
 
 fun BaseGui.update() {
     this.createDefaultContents()

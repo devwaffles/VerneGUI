@@ -10,7 +10,6 @@ import dev.butter.gui.internal.listener.BaseGuiListener
 import dev.butter.gui.internal.listener.PlayerLoginListener
 import dev.butter.gui.internal.update.AnimatedItemRunnable
 import dev.butter.gui.internal.validation.*
-import dev.butter.gui.internal.validation.DependencyType.SINGLETON
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -18,13 +17,15 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 internal object InternalGuiHandler {
+    internal val DUMMY_GUI: BaseGui = object : BaseGui() {}
+
     internal val guis: MutableSet<GuiClass> = mutableSetOf()
     internal val dynamicGuis: MutableSet<GuiClass> = mutableSetOf()
     internal val staticGuis: MutableSet<GuiClass> = mutableSetOf()
     internal val staticGuiInstances: MutableSet<BaseGui> = mutableSetOf()
     internal val dynamicGuiInstances: MutableMap<UUID, Set<BaseGui>> = mutableMapOf()
-    internal val staticDependencies: MutableMap<AnyClass, StaticInit<*>> = mutableMapOf()
-    internal val dynamicDependencies: MutableMap<AnyClass, DynamicInit<*>> = mutableMapOf()
+    internal val staticDependencies: MutableMap<AnyClass, MutableMap<KClass<out BaseGui>, StaticInit<*>>> = mutableMapOf()
+    internal val dynamicDependencies: MutableMap<AnyClass, MutableMap<KClass<out BaseGui>, DynamicInit<*>>> = mutableMapOf()
     internal val singletons: MutableMap<AnyClass, StaticInit<*>> = mutableMapOf()
     internal lateinit var plugin: JavaPlugin
     internal lateinit var injector: Injector
@@ -59,6 +60,10 @@ internal object InternalGuiHandler {
     }
 
     fun register(gui: GuiClass) {
+        if (gui == DUMMY_GUI::class) {
+            return
+        }
+
         validateUninitialized()
         gui.validate()
 
@@ -67,45 +72,56 @@ internal object InternalGuiHandler {
 
     fun registerDependency(dependency: AnyClass) {
         validateUninitialized()
-        validate(DependencyType.STATIC, dependency, true)
+        validateNoArgsConstructor(dependency)
 
-        staticDependencies +=
-            dependency to { dependency.noArgsConstructor.call() }
+        staticDependencies.getOrPut(
+            dependency,
+            ::mutableMapOf
+        )[DUMMY_GUI::class] = { dependency.noArgsConstructor.call() }
     }
 
-    fun <D : KClass<T>, T : Any> registerStatic(
+    fun <D : KClass<T>, T : Any, G : BaseGui> registerStatic(
         dependency: D,
+        gui: KClass<G>,
         init: StaticInit<T>,
     ) {
         validateUninitialized()
-        validate(DependencyType.STATIC, dependency, false)
 
-        staticDependencies += dependency to init
+        staticDependencies.getOrPut(
+            dependency,
+            ::mutableMapOf
+        )[gui] = init
     }
 
-    fun <D : KClass<T>, T : Any> registerDynamic(
+    fun <D : KClass<T>, T : Any, G : BaseGui> registerDynamic(
         dependency: D,
+        gui: KClass<G>,
         init: DynamicInit<T>,
     ) {
         validateUninitialized()
-        validate(DependencyType.DYNAMIC, dependency, false)
 
-        dynamicDependencies += dependency to init
+        dynamicDependencies.getOrPut(
+            dependency,
+            ::mutableMapOf,
+        )[gui] = init
     }
 
-    fun <D : KClass<T>, T : Any> registerDynamic(
+    fun <D : KClass<T>, T : Any, G : BaseGui> registerDynamic(
         dependency: D,
+        gui: KClass<G>,
         init: PlayerInit<T>,
     ) {
         validateUninitialized()
-        validate(DependencyType.DYNAMIC, dependency, false)
 
-        dynamicDependencies += dependency to { player, _ -> init(player) }
+        dynamicDependencies.getOrPut(
+            dependency,
+            ::mutableMapOf,
+        )[gui] = { player, _ -> init(player) }
     }
 
     fun registerSingleton(dependency: AnyClass) {
         validateUninitialized()
-        validate(SINGLETON, dependency, true)
+        validateNoArgsConstructor(dependency)
 
         val constructor = dependency.noArgsConstructor
         val instance = constructor.call()
