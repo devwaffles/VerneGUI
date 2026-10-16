@@ -41,6 +41,6 @@ Maven
 <dependency>
     <groupId>com.github.devwaffles</groupId>
     <artifactId>VerneGUI</artifactId>
-    <version>1.2.2-beta</version>
+    <version>1.2.4-beta</version>
 </dependency>
 ```
